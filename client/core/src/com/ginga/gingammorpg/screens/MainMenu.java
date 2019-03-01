@@ -280,6 +280,7 @@ public class MainMenu implements Screen{
 									}
 								});
 								Thread.currentThread().interrupt();
+								
 								return;
 								}
 							}else{

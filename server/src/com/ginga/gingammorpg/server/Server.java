@@ -77,7 +77,7 @@ public class Server {
 +"M9fLSBZ7eJDNHLtVcJz88kfguD2TeVqPnQgAr2wA8Ezax3hzPAZzRDqkgV4ZePsc"
 +"nCkddtS6tyvtZ/oKE9bpS+TWQJgiEEL/ayG33mqrOuUJG07pEFkzN2PWjZ9oyszN"
 +"oefPbVR8nWhwCef2QiAwwtsz";
-			
+			///TODO: GENERATE DINAMICALY
 			PrivateKeyStr = PrivateKeyStr.replaceAll("\\s+", "");
 			byte[] privateByte = Base64.getDecoder().decode(PrivateKeyStr);
 			
@@ -174,11 +174,11 @@ public class Server {
 				
 			}, saveintervals, saveintervals, TimeUnit.MINUTES);
 			
-			Thread process = new Thread(new Runnable() {	//entity packet sendout
+			ScheduledExecutorService entityThread = Executors.newSingleThreadScheduledExecutor();
+			entityThread.scheduleAtFixedRate(new Runnable() {	//entity packet sendout
 				
 				@Override
 				public void run() {
-					while(running){
 							for(int i=0;i<Players.size();i++){
 								UserHandler u = Players.get(i);
 								if(u != null){
@@ -230,17 +230,9 @@ public class Server {
 								mob.act();
 							}
 					
-							try {
-								Thread.sleep(60);
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt();
-								e.printStackTrace();
-						}
-					}
 				}
-			});
-			process.setPriority(5);
-			process.start();
+			},0,1000/20,TimeUnit.MILLISECONDS);
+			
 			
 			
 			Thread ui = new Thread(new Runnable() {
@@ -279,7 +271,7 @@ public class Server {
 								
 							}
 							System.out.println("Shutting down...");
-							process.interrupt();
+							entityThread.shutdown();
 							exec.shutdown();
 							System.exit(1);
 							break;
@@ -313,7 +305,6 @@ public class Server {
 			
 			
 		} catch (IOException | ClassNotFoundException | SQLException | InvalidKeySpecException | NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -544,7 +535,6 @@ public class Server {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

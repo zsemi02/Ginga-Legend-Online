@@ -62,6 +62,7 @@ public class MovePacket {
 				
 				@Override
 				public void run() {
+					System.out.println("An error occoured while sending the Movement package!");
 					((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenu());
 				}
 			});

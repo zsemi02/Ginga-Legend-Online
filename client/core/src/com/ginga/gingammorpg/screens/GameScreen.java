@@ -6,6 +6,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.handler.MessageContext.Scope;
 
@@ -331,7 +334,8 @@ public class GameScreen implements Screen{
 		inputMultiplexer.addProcessor(input);
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		
-		Thread listener = new Thread(new Runnable() {
+		ScheduledExecutorService listener = Executors.newSingleThreadScheduledExecutor();
+		listener.scheduleAtFixedRate(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -448,7 +452,9 @@ public class GameScreen implements Screen{
 									
 									@Override
 									public void run() {
+										System.out.println("Disconnect packet received");
 										((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu());
+										
 									
 									}
 								});
@@ -522,23 +528,21 @@ public class GameScreen implements Screen{
 							}
 						}
 						
-						try {
+						/*try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {
 							
 								Thread.currentThread().interrupt();;
 							
 							e.printStackTrace();
-						}
+						}*/
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 			}
-		});
-		listener.setName("listener");
-		listener.setPriority(6);
-		listener.start();
+		},0,1000/40,TimeUnit.MILLISECONDS);
+		
 		
 		
 		
