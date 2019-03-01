@@ -11,6 +11,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -51,47 +52,11 @@ public class Server {
 	public Server() {
 		try {
 			//String PrivateKeyStr = "MIIEpAIBAAKCAQEAnSfN836JV3klzC5QdUPhWauUitFnkFvadk44xuVXunz5hmUFA2mSYh9hY4Clo7xtTxjC8Ja/gqDvsaQlv4I+c1652epPygK4JyhxHrIgKEHFyTxa4LXHHW8nezS2LYLuGoWIVeu80xkN7jzgE28XLO5y4SKEpIz9vLLebrLVxD5W4O5kVNxqtuotm1RvH6wDH8g0kdIn7EtS8XyAd8CE+STZ9zT6fzxaOm67R/llajiQJydAExrXbiKss791ibkr8n1Y+WfEofPYDQmlrzpgXIfeDiGwetd8QPyn7kYdW4o3PfES6OApMKfFCQXdpT4Jryez+wjWeB7tVwIExVJ5+QIDAQABAoIBADvbp2QxNBqvOChXE6o2mqTO55sgO3QOqF0bWiDXxdxwMZJw88Hi+jCJh0yg+XYuFOxloAqHQJZ+ug1NWlthPmwvDlbkGlP1STMRAlUQv5LVyoHljS+9zQN3DPCumR0om4xahB1F1vwItPejFC4SyB8DC5qYzTDnytWOw44ia619ACjGyZAs/oT1AlWOm6Mb/rYrykYTOojF3EnuDFOnQ86DkQNTT5gPmVnCSOPNvBa2Rg3vpWrD28TcHBvIAhqAQXVKRI0Z4IwzsIEFSWfRCg0ZP+RqACSwhR7z4Kb33ePthf3QBxSzUUvfJFe8FakNZ3xI3suOVJmRPs8So6vO/gECgYEA0RDHujtUjJsGDly9acAk65BVGN19LlRhlikUdRgBDXQEfUqQL8Evp9U7ArjhcJMnTMoQ6T2w4IZN3thLFaDNTBR4vKX2CjLZSidSEKlyZPWmWy+gP6gXkn5c5EwM7Iof8t0yIbhHwF7lF7bj4ETvxDG5yXsWjcVdw/tMbWCom1kCgYEAwG+yoRXfwDmDmo1IGiykq8W80iHYoUWzP7U0Woea9meJA8+SKIvjNXKj/hIH0LHggA3VzBJB69J6+csV4X6Gtrn7kRzhUAqttvlT9HhkoJO0eqCK3sGN8yjnMCuPmHFORSoFmA+w+1wK1UnChDR7ovusCIYWllBILspaL5ohH6ECgYEAwEKrOlOHjIqgBiM5OYAvM8aWy3gcv7dvyvTaUFiT1zhjTIl+kbwaREDutLEq+SkKki6dYLGP8Nrxz8afPjOTuKx24B3LZ1OdyfjhGluJzNivdNoWh5PgoaK9cGGT3Q+lE+ZhTOs4aOubyLQzWbJrwMRt86DTe+sOMMXwYgHq7HkCgYEAsE3ln1XWEFvhKdjkxS4/lCxuySo/OcoM5oJSu9pfa/8Bdd9XbhRzjsVAYAcO5/H/1/JU/UmA4diN2ItquZRdQc31IEcQWm/eJbQaafFfaArLIEoz0NAOCEhiPyy5u5Wbexx70YwWvsPeHPkd4FfhKjpfq9OFoCNfbpbvt4sDa+ECgYAwxrN5zCGhvUDRoRfhFzPXy0gWe3iQzRy7VXCc/PJH4Lg9k3laj50IAK9sAPBM2sd4czwGc0Q6pIFeGXj7HJwpHXbUurcr7Wf6ChPW6Uvk1kCYIhBC/2sht95qqzrlCRtO6RBZMzdj1o2faMrMzaHnz21UfJ1ocAnn9kIgMMLbMw==";
-			String PrivateKeyStr = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCdJ83zfolXeSXM"
-+"LlB1Q+FZq5SK0WeQW9p2TjjG5Ve6fPmGZQUDaZJiH2FjgKWjvG1PGMLwlr+CoO+x"
-+"pCW/gj5zXrnZ6k/KArgnKHEesiAoQcXJPFrgtccdbyd7NLYtgu4ahYhV67zTGQ3u"
-+"POATbxcs7nLhIoSkjP28st5ustXEPlbg7mRU3Gq26i2bVG8frAMfyDSR0ifsS1Lx"
-+"fIB3wIT5JNn3NPp/PFo6brtH+WVqOJAnJ0ATGtduIqyzv3WJuSvyfVj5Z8Sh89gN"
-+"CaWvOmBch94OIbB613xA/KfuRh1bijc98RLo4Ckwp8UJBd2lPgmvJ7P7CNZ4Hu1X"
-+"AgTFUnn5AgMBAAECggEAO9unZDE0Gq84KFcTqjaapM7nmyA7dA6oXRtaINfF3HAx"
-+"knDzweL6MImHTKD5di4U7GWgCodAln66DU1aW2E+bC8OVuQaU/VJMxECVRC/ktXK"
-+"geWNL73NA3cM8K6ZHSibjFqEHUXW/Ai096MULhLIHwMLmpjNMOfK1Y7DjiJrrX0A"
-+"KMbJkCz+hPUCVY6boxv+tivKRhM6iMXcSe4MU6dDzoORA1NPmA+ZWcJI4828FrZG"
-+"De+lasPbxNwcG8gCGoBBdUpEjRngjDOwgQVJZ9EKDRk/5GoAJLCFHvPgpvfd4+2F"
-+"/dAHFLNRS98kV7wVqQ1nfEjey45UmZE+zxKjq87+AQKBgQDREMe6O1SMmwYOXL1p"
-+"wCTrkFUY3X0uVGGWKRR1GAENdAR9SpAvwS+n1TsCuOFwkydMyhDpPbDghk3e2EsV"
-+"oM1MFHi8pfYKMtlKJ1IQqXJk9aZbL6A/qBeSflzkTAzsih/y3TIhuEfAXuUXtuPg"
-+"RO/EMbnJexaNxV3D+0xtYKibWQKBgQDAb7KhFd/AOYOajUgaLKSrxbzSIdihRbM/"
-+"tTRah5r2Z4kDz5Ioi+M1cqP+EgfQseCADdXMEkHr0nr5yxXhfoa2ufuRHOFQCq22"
-+"+VP0eGSgk7R6oIrewY3zKOcwK4+YcU5FKgWYD7D7XArVScKENHui+6wIhhaWUEgu"
-+"ylovmiEfoQKBgQDAQqs6U4eMiqAGIzk5gC8zxpbLeBy/t2/K9NpQWJPXOGNMiX6R"
-+"vBpEQO60sSr5KQqSLp1gsY/w2vHPxp8+M5O4rHbgHctnU53J+OEaW4nM2K902haH"
-+"k+Chor1wYZPdD6UT5mFM6zho65vItDNZsmvAxG3zoNN76w4wxfBiAerseQKBgQCw"
-+"TeWfVdYQW+Ep2OTFLj+ULG7JKj85ygzmglK72l9r/wF131duFHOOxUBgBw7n8f/X"
-+"8lT9SYDh2I3Yi2q5lF1BzfUgRxBab94ltBpp8V9oCssgSjPQ0A4ISGI/LLm7lZt7"
-+"HHvRjBa+w94c+R3gV+EqOl+r04WgI19ulu+3iwNr4QKBgDDGs3nMIaG9QNGhF+EX"
-+"M9fLSBZ7eJDNHLtVcJz88kfguD2TeVqPnQgAr2wA8Ezax3hzPAZzRDqkgV4ZePsc"
-+"nCkddtS6tyvtZ/oKE9bpS+TWQJgiEEL/ayG33mqrOuUJG07pEFkzN2PWjZ9oyszN"
-+"oefPbVR8nWhwCef2QiAwwtsz";
-			///TODO: GENERATE DINAMICALY
-			PrivateKeyStr = PrivateKeyStr.replaceAll("\\s+", "");
-			byte[] privateByte = Base64.getDecoder().decode(PrivateKeyStr);
 			
-			
-			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateByte);
-			//X509EncodedKeySpec keySpec = new X509EncodedKeySpec(privateByte);
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			
-			PrivateKey pkey = keyFactory.generatePrivate(keySpec);
-			privateKey = pkey;
 			
 			server = new ServerSocket(PORT);
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/gingammorpg?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/gingammorpg?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "");	//TODO: rewrite 127.0.0.1 to static IP
 			
 			
 			Statement state = conn.createStatement();
@@ -170,6 +135,15 @@ public class Server {
 							RespawnMobs.remove(respawn);
 						}
 					}
+					try {
+						PreparedStatement deletePrivs = conn.prepareStatement("DELETE FROM `auth`");
+						deletePrivs.executeUpdate();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
 				}
 				
 			}, saveintervals, saveintervals, TimeUnit.MINUTES);
@@ -304,7 +278,7 @@ public class Server {
 			}
 			
 			
-		} catch (IOException | ClassNotFoundException | SQLException | InvalidKeySpecException | NoSuchAlgorithmException e) {
+		} catch (IOException | ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 	}

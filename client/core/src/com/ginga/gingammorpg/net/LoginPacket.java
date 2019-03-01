@@ -18,12 +18,14 @@ public class LoginPacket {
 	DataOutputStream out;
 	PublicKey pubKey;
 	byte[] encryptedPass;
+	String md5ID;
 	
-	public LoginPacket(String user,String sha256pass, PublicKey pubKey, DataOutputStream out) {
+	public LoginPacket(String user,String sha256pass, PublicKey pubKey, String md5ID,DataOutputStream out) {
 		this.user = user;
 		this.out = out;
 		this.pass = sha256pass;
 		this.pubKey = pubKey;
+		this.md5ID = md5ID;
 		
 		s = ("o"+user).getBytes();
 		s[0]=packettype;
@@ -49,6 +51,7 @@ public class LoginPacket {
 		try {
 			out.writeByte(packettype);
 			out.writeUTF(user);
+			out.writeUTF(md5ID);
 			out.write(encryptedPass);
 			out.flush();
 		} catch (IOException e) {

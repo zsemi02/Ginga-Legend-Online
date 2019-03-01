@@ -23,28 +23,35 @@ function security($conn,$str){
         $pubkey = $pubkey["key"];
 
         echo $pubkey;
-        $ID = md5(bin2hex(random_bytes(8)));
-        echo $ID;
+        $ID = md5(bin2hex(random_bytes(16)).time());
+        echo "@".$ID;
         $q = "INSERT INTO `auth` (`privkey`, `hash`) VALUES ('".$privkey."', '".$ID."')";
         mysqli_query($conn, $q) or die(mysql_error($conn));
     }
 
     //////// Check validity
-    if(isset($_POST['username']) && isset($_POST['password'])){
-        $privatekey = file_get_contents("key.pem"); // mindig újat generálni!
+    if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['id'])){
+        //$privatekey = file_get_contents("key.pem"); // mindig újat generálni!
         $pass = security($conn,$_POST['password']);
         $username = security($conn,$_POST['username']);
+        $id = security($conn, $_POST['id']);
         
-  
+        $q = "SELECT `privkey` from `auth` where hash='".$id."'";
+        $data = mysqli_query($conn,$q);
+        $num = mysqli_num_rows($data);
+        $data = mysqli_fetch_assoc($data);
+        if($num == 0) die();
+        $privatekey = $data['privkey'];
+        
+
+
        $data = openssl_pkey_get_private($privatekey, '');
 
         $pass = str_replace(" ", "+",$pass);
        
       
         openssl_private_decrypt(base64_decode($pass), $passmd5, $data);
-        while($msg = openssl_error_string()){
-            echo $msg."\n";
-        }
+        
 
 
         $q = "SELECT * FROM `users` WHERE `name`='".$username."' AND `password`='".$passmd5."'";

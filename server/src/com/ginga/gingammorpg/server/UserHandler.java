@@ -11,7 +11,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivilegedExceptionAction;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.BadPaddingException;
@@ -53,6 +58,11 @@ public class UserHandler extends Thread{
 	boolean running = true;
 	Connection conn;
 	Item[][] Items = new Item[8][2];
+	String LoginID;
+	String PrivateKey;
+	java.security.PrivateKey decryptkey;
+	
+	
 	
 	//spells
 	boolean Spell_Attack=false;
@@ -101,10 +111,10 @@ public class UserHandler extends Thread{
 								}else if(b[0] == OpCodes.LOGIN){
 									
 									username = be.readUTF();
-									
+									LoginID = be.readUTF();
 									EncryptedLength = be.read(encryptedPassInput);
 									encryptedPass = new byte[EncryptedLength];
-									
+									System.out.println(LoginID);
 									for(int k=0;k<EncryptedLength;k++){
 										encryptedPass[k] = encryptedPassInput[k];
 									}
@@ -157,8 +167,38 @@ public class UserHandler extends Thread{
 							switch(b[0]){ //49 = 1
 							case OpCodes.LOGIN:
 								
-								byte[] decuser = Main.decrypt(server.privateKey, encryptedPass);
+								PreparedStatement keyReq = conn.prepareStatement("SELECT `privkey` from `auth` where hash=?");
+								keyReq.setString(1, LoginID);
+								ResultSet priv = keyReq.executeQuery();
+								int count = 0;
+								while(priv.next()){
+									count++;
+								}
+									if(count == 1){
+										priv.first();
+										PrivateKey = priv.getString("privkey");
+										PreparedStatement delete = conn.prepareStatement("DELETE FROM `auth` WHERE hash=?");
+										delete.setString(1, LoginID);
+										delete.executeUpdate();
+									}
+								PrivateKey = priv.getString("privkey");
+								PrivateKey = PrivateKey.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "").replaceAll("\n", "").replaceAll("\\s", "");
+								System.out.println(PrivateKey);
+								byte[] PrivByte = Base64.getDecoder().decode(PrivateKey);
+								PKCS8EncodedKeySpec keyspec = new PKCS8EncodedKeySpec(PrivByte);
+								KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+								
+								try {
+									java.security.PrivateKey privkey = keyFactory.generatePrivate(keyspec);
+									decryptkey = privkey;
+								} catch (InvalidKeySpecException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								
+								byte[] decuser = Main.decrypt(decryptkey, encryptedPass);
 								md5pass = new String(decuser);
+								
 								System.out.println(md5pass);
 								//decoded
 								PreparedStatement resultQuery = conn.prepareStatement("SELECT * FROM `users` WHERE name=? AND password=? ");

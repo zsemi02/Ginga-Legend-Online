@@ -84,7 +84,7 @@ public class MainMenu implements Screen{
 	int health, maxhealt, level, xp, needexp, money, mana, maxmana;
 	int[][] Slots = new int[8][2];
 	public String salt = "";
-	
+	String LoginID = "";
 
 	@Override
 	public void show() {
@@ -238,7 +238,7 @@ public class MainMenu implements Screen{
 						BufferedReader reader = new BufferedReader(new InputStreamReader(connect.getInputStream()));
 						DataInputStream in = new DataInputStream(connect.getInputStream());
 						System.out.println(salt);
-						LoginPacket login = new LoginPacket(usernameTextField.getText().toString(),sha256(salt+passwordTextField.getText().toString()), GlobalpubKey, writer);
+						LoginPacket login = new LoginPacket(usernameTextField.getText().toString(),sha256(salt+passwordTextField.getText().toString()), GlobalpubKey, LoginID ,writer);
 						login.Send();
 						while(true){
 							int[] bytes = new int[1024];
@@ -380,6 +380,8 @@ public class MainMenu implements Screen{
 	//Receive the public key, encrypt the pw, send a request to check if account is exist, if yes, log in.
 	public void ValidateAccount(String pub) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, UnsupportedEncodingException{
 		//System.out.println(pub.length());
+		LoginID = pub.split("@")[1];
+		pub = pub.split("@")[0];
 		pub = pub.replace("-----BEGIN PUBLIC KEY-----\n", "").replace("-----END PUBLIC KEY-----", "").replaceAll("\n", "");
 		byte[] publicByte = Base64.getDecoder().decode(pub);
 		
@@ -395,7 +397,7 @@ public class MainMenu implements Screen{
 		
 		//System.out.println(finalpass);
 		HttpRequestBuilder builder = new HttpRequestBuilder();
-		HttpRequest req = builder.newRequest().method(HttpMethods.POST).url(GingaMMORPG.LOGIN_SERVER).content("username="+usertosend+"&password="+finalpass+"").build();
+		HttpRequest req = builder.newRequest().method(HttpMethods.POST).url(GingaMMORPG.LOGIN_SERVER).content("username="+usertosend+"&password="+finalpass+"&id="+LoginID).build();
 		Gdx.net.sendHttpRequest(req, httpResponseListener);
 	}
 	
