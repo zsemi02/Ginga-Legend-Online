@@ -1,0 +1,26 @@
+{
+	"com.badlogic.gdx.graphics.Color":{
+		"white":{"r":1,"g":1,"b":1,"a":1},
+		"black":{"r":0,"g":0,"b":0,"a":1}
+	},
+	"com.badlogic.gdx.graphics.g2d.BitmapFont":{
+		"white": {"file":"fonts/Arial.fnt"},
+		"black": {"file":"fonts/Arial-black.fnt"},
+		"black-10": {"file":"fonts/Arial-black-10.fnt"},
+		"namelabel": {"file":"fonts/Arial-namelabel.fnt"}
+	},
+	"com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle":{
+		"login":{"background":"TextField", "font":black, "fontColor":black, "focusedBackground":"TextFieldSelect"}
+	},
+	"com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle":{
+		"default":{"font":black, "fontColor":black},
+		"namelabel":{"font":namelabel, "fontColor":black}
+	},
+	"com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle":{
+		"default":{"background":"TextField", "titleFont":black, "titleFontColor":black}
+	},
+	"com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
+		"default": {"label": {"font": black}}
+	}
+
+}

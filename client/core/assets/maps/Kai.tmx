@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.0.2" orientation="orthogonal" renderorder="left-down" width="30" height="30" tilewidth="8" tileheight="8" nextobjectid="16">
+ <tileset firstgid="1" source="ginga.tsx"/>
+ <tileset firstgid="1025" name="husi-sea" tilewidth="3" tileheight="3" tilecount="1" columns="1">
+  <image source="husi.png" width="3" height="3"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="30" height="30">
+  <data encoding="base64" compression="zlib">
+   eJydk0EOxCAMA7v/f0UlHrqXHioUz5geEBKEYDv2+l3Xetb92u9wvrYae5Pu7O1+NtVNf1G/6c2Eg/Ds9aRL4pk4NBpM2Cc8pJ9xTnP5skijBlvaCZfNZ8Ix1X7FZvzNM1RnHiZvt9qZRy2Dln3LVLpLc0s9Ws8bFvICzaDVhM4sQw1/8xnlJNXbe1rUu70nHze5SDtpaho1GU3zsLPGB5bpqZ40TH1N92bujR+JQ8pVwtPUNZ5K/RKXpj/5zO6a2Z3403KQeNh/5rnGa5RN4kx/nnjetGo8TvkjXY3rSd7sX9LuVGPDlXqQDs3cmt40I/NE8oll1ni2WI039aTZ/QG7NT8X
+  </data>
+ </layer>
+</map>

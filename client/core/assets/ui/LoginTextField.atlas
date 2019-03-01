@@ -1,0 +1,24 @@
+
+LoginTextField.png
+size: 123,35
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+TextField
+  rotate: false
+  xy: 62, 1
+  size: 60, 33
+  split: 7, 6, 8, 9
+  pad: 7, 6, 8, 9
+  orig: 60, 33
+  offset: 0, 0
+  index: -1
+TextFieldSelect
+  rotate: false
+  xy: 1, 1
+  size: 60, 33
+  split: 7, 6, 8, 9
+  pad: 7, 6, 8, 9
+  orig: 60, 33
+  offset: 0, 0
+  index: -1

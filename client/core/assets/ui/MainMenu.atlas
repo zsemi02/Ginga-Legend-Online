@@ -1,0 +1,33 @@
+
+MainMenu.png
+size: 200,34
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+MenuButtonDown
+  rotate: false
+  xy: 68, 2
+  size: 64, 30
+  split: 25, 24, 11, 11
+  pad: 25, 24, 11, 11
+  orig: 64, 30
+  offset: 0, 0
+  index: -1
+MenuButtonHover
+  rotate: false
+  xy: 134, 2
+  size: 64, 30
+  split: 25, 24, 11, 11
+  pad: 25, 24, 11, 11
+  orig: 64, 30
+  offset: 0, 0
+  index: -1
+MenuButtonUp
+  rotate: false
+  xy: 2, 2
+  size: 64, 30
+  split: 25, 24, 11, 11
+  pad: 25, 24, 11, 11
+  orig: 64, 30
+  offset: 0, 0
+  index: -1
