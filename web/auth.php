@@ -6,15 +6,32 @@ include("conn.php");
 function security($conn,$str){
         return mysqli_real_escape_string($conn,htmlspecialchars(strip_tags(addslashes($str))));
     }
-
+//// Get request, Send out pubkey
     if(isset($_GET['getpubkey'])){
-        
-        $publickey = file_get_contents("public.pem");
-        
-        echo $publickey;
+        $privkey = null;
+        $config = array(
+            "config" => "E:\programok\OpenSSL-Win64\bin\cnf\openssl.cnf",
+            "private_key_bits" => 2048,
+            "private_key_type" => OPENSSL_KEYTYPE_RSA,
+            "encrypt_key" => false,
+
+        );
+        $gen = openssl_pkey_new($config);
+       
+        openssl_pkey_export($gen, $privkey, "", $config);
+        $pubkey = openssl_pkey_get_details($gen);
+        $pubkey = $pubkey["key"];
+
+        echo $pubkey;
+        $ID = md5(bin2hex(random_bytes(8)));
+        echo $ID;
+        $q = "INSERT INTO `auth` (`privkey`, `hash`) VALUES ('".$privkey."', '".$ID."')";
+        mysqli_query($conn, $q) or die(mysql_error($conn));
     }
+
+    //////// Check validity
     if(isset($_POST['username']) && isset($_POST['password'])){
-        $privatekey = file_get_contents("key.pem"); // teszt után hardcodeolni, mindig újat generálni!
+        $privatekey = file_get_contents("key.pem"); // mindig újat generálni!
         $pass = security($conn,$_POST['password']);
         $username = security($conn,$_POST['username']);
         
