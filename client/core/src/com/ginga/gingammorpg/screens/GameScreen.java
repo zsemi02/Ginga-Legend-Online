@@ -56,6 +56,7 @@ import com.ginga.gingammorpg.entity.EntityPacket;
 import com.ginga.gingammorpg.entity.Mob;
 import com.ginga.gingammorpg.entity.Player;
 import com.ginga.gingammorpg.entity.RemotePlayer;
+import com.ginga.gingammorpg.net.MainPacketListener;
 import com.ginga.gingammorpg.net.MapIDs;
 import com.ginga.gingammorpg.net.MovePacket;
 import com.ginga.gingammorpg.net.PacketTypes;
@@ -63,19 +64,19 @@ import com.ginga.gingammorpg.net.PacketTypes;
 public class GameScreen implements Screen{
 
 	
-	World world;
+	public World world;
 	Box2DDebugRenderer debugrenderer;
 	OrthographicCamera camera, MapCamera;
-	Player p;
+	public Player p;
 	SpriteBatch batch;
 	DataOutputStream out;
 	DataInputStream in;
 	Socket socket;
 	Vector2 velocity = new Vector2();
 	float x,y;
-	byte RegionByte;
+	public byte RegionByte;
 	String username;
-	String RegionName;
+	public String RegionName;
 	TiledMap region;
 	TiledMapRenderer RegionRenderer, MapRenderer;
 	int TileSize = 8;
@@ -83,16 +84,16 @@ public class GameScreen implements Screen{
 	int[] forelayers = {1}; 
 	int MapWidth, MapHeight;
 	float mapScale = 3;
-	ArrayList<RemotePlayer> RemotePlayers = new ArrayList<RemotePlayer>();
-	ArrayList<Mob> Mobs = new ArrayList<Mob>();
-	Skin skin;
+	public ArrayList<RemotePlayer> RemotePlayers = new ArrayList<RemotePlayer>();
+	public ArrayList<Mob> Mobs = new ArrayList<Mob>();
+	public Skin skin;
 	int health, MaxHealth, level, xp, needexp, money, mana, maxmana;
 	Body hitBody;
 	Vector2 testPoint = new Vector2(0,0);
-	PlayerHud hud;
+	public PlayerHud hud;
 	boolean SpellCasted = false, isTravel = false, showMap=false, Showinventory=false;
 	Attack attack;
-	Creature Selected;
+	public Creature Selected;
 	InputController input;
 	Label SwitchMapLablel;
 	String ChangeTo = null;
@@ -334,223 +335,13 @@ public class GameScreen implements Screen{
 		inputMultiplexer.addProcessor(input);
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		
-		ScheduledExecutorService listener = Executors.newSingleThreadScheduledExecutor();
-		listener.scheduleAtFixedRate(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(true){
-					
-					try {
-						
-						if(in.available() > 0){
-							byte OP = in.readByte();
-							if(OP == PacketTypes.ADD_ENTITY){
-								byte type = in.readByte();
-								if(type == EntityPacket.PLAYER){
-									int id = in.readInt();
-									String name = in.readUTF();
-									int remStyleid = in.readByte();
-									float xRemote = in.readFloat();
-									float yRemote = in.readFloat();
-									float Remoterotation = in.readFloat();
-									byte remoteStartingRegion = in.readByte();
-									int RemoteHP = in.readInt();
-									int RemoteMaxHp = in.readInt();
-									int remoteLevel = in.readInt();
-									boolean IsLoaded = false;
-									//System.out.println(name+" "+xRemote+" "+yRemote+" "+RemotePlayers.size());
-									for(int i=0;i<RemotePlayers.size();i++){
-										//System.out.println("called");
-										RemotePlayer rem = RemotePlayers.get(i);
-										//System.out.println(rem.ID);
-										if(rem.ID == id){
-											rem.position.x = xRemote;
-											rem.position.y = yRemote;
-											rem.rotation = Remoterotation;
-											rem.Health = RemoteHP;
-											rem.maxHealth = RemoteMaxHp;
-											rem.level = remoteLevel;
-											IsLoaded = true;
-											break;
-										}
-									}//
-									if(!IsLoaded){
-												if(!world.isLocked()){
-												RemotePlayer remote = new RemotePlayer(30, 30, name, id, xRemote, yRemote, remoteStartingRegion, RemoteHP, RemoteMaxHp, remStyleid, world, skin, remoteLevel);
-												RemotePlayers.add(remote);
-												}
-												
-												//System.out.println("NEW REMOTE PLAYER AT "+x+" "+y+" id: "+id+" - "+RemotePlayers.size());
-											
-									}
-								}else if(type == EntityPacket.MOB){
-									int MobId = in.readInt();
-									String MobName = in.readUTF();
-									float Mobx = in.readFloat();
-									float Moby = in.readFloat();
-									int MobHealth = in.readInt();
-									int MobMaxHealth = in.readInt();
-									int MobStyleID = in.readInt();
-									int MobDamage = in.readInt();
-									int MobLevel = in.readInt();
-									int MobXpDrop = in.readInt();
-									float MobRotation = in.readFloat();
-									boolean isLoaded = false;
-									for(int k=0; k<Mobs.size();k++){
-										Mob current = Mobs.get(k);
-										if(current.ID == MobId){
-											current.position.set(Mobx, Moby);
-											current.Health = MobHealth;
-											current.rotation = MobRotation;
-											isLoaded = true;
-											break;
-										}
-									}
-									if(!isLoaded){
-										if(!world.isLocked()){
-										Mob newMob = new Mob(30, 30, MobId, MobName, Mobx, Moby, MobHealth, MobMaxHealth, MobStyleID, MobDamage, MobLevel, MobXpDrop, MobRotation, skin, world);
-										Mobs.add(newMob);
-										
-										}
-									}
-									
-									
-								}
-							}else if(OP == PacketTypes.REMOVE_ENTITY){
-								byte Removetype = in.readByte();
-								int RemovableID = in.readInt();
-								System.out.println(Removetype);
-								
-								if(Removetype == EntityPacket.PLAYER){
-								for(int k = 0;k<RemotePlayers.size();k++){
-									RemotePlayer rem = RemotePlayers.get(k);
-									if(rem.ID == RemovableID){
-										if(Selected == rem){
-											hud.targetVisible=false;
-										}
-										world.destroyBody(rem.getBody());
-										RemotePlayers.remove(rem);
-										rem.dispose();
-									}
-								}
-								}else if(Removetype == EntityPacket.MOB){
-									for(int k = 0;k<Mobs.size();k++){
-										Mob rem = Mobs.get(k);
-										if(rem.ID == RemovableID){
-											if(Selected == rem){
-												hud.targetVisible=false;
-											}
-											world.destroyBody(rem.getBody());
-											Mobs.remove(rem);
-											rem.dispose();
-										}
-									}
-								}
-							}else if(OP == PacketTypes.DISCONNECT){
-								Gdx.app.postRunnable(new Runnable() {
-									
-									@Override
-									public void run() {
-										System.out.println("Disconnect packet received");
-										((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu());
-										
-									
-									}
-								});
-								break;
-							}else if(OP == PacketTypes.SET_COORDINATES){
-								byte newRegionByte = in.readByte();
-								String newRegionString = in.readUTF();
-								float newx = in.readFloat();
-								float newy = in.readFloat();
-								float newRotation = in.readFloat();
-								RegionByte = newRegionByte;
-								RegionName = newRegionString;
-								ChangePosition(newRegionString, newx, newy, newRotation);
-							}else if(OP == PacketTypes.SET_HEALTH){
-								int newHP = in.readInt();
-								p.Health = newHP;
-							
-							
-						}else if(OP == PacketTypes.SET_MANA){
-							int newMana = in.readInt();
-							p.mana = newMana;
-							
-							
-						
-						}else if(OP == PacketTypes.SET_EXP){
-							int newExp = in.readInt();
-							p.xp = newExp;
-							
-						}else if(OP == PacketTypes.SET_NEEDEDXP){
-							int newNeededExp = in.readInt();
-							p.neededxp = newNeededExp;
-							hud.setNeededXP(p.neededxp);
-							
-						
-						}else if(OP == PacketTypes.SET_MAXHP){
-							int newMaxHP = in.readInt();
-							p.maxhealth = newMaxHP;
-							hud.setMaxHealth(p.maxhealth);
-							
-						
-						}else if(OP == PacketTypes.SET_MAXMANA){
-							int newMaxMana = in.readInt();
-							p.maxmana = newMaxMana;
-							hud.setMaxMana(p.maxmana);
-							
-						
-						}else if(OP == PacketTypes.SET_LEVEL){
-							int newlevel = in.readInt();
-							p.level = newlevel;
-							hud.level = p.level;
-							p.setnameLabelLevel(newlevel);
-							//Play animation
-							
-						
-						}else if(OP == PacketTypes.CHAT_MESSAGE){
-							String from = in.readUTF();
-							String msg = in.readUTF();
-							hud.sendMsg("<"+from+">: "+msg);
-						}
-						
-							
-						}
-						
-						for(int i=0;i<RemotePlayers.size();i++){
-							RemotePlayer rem = RemotePlayers.get(i);
-							//System.out.println("local pos: "+p.getPosition().x+", "+p.getPosition().y+" remote: "+rem.getPosition().x+", "+rem.getPosition().y);
-							if(((p.getPosition().x - rem.getPosition().x) > 1000f || (p.getPosition().x - rem.getPosition().x) < -1000f) || ((p.getPosition().y - rem.getPosition().y) > 1000f || (p.getPosition().y - rem.getPosition().y) < -1000f)){
-								//System.out.println("X: "+(p.getPosition().x-rem.getPosition().x)+" Y: "+(p.getPosition().y-rem.getPosition().y));
-								RemotePlayers.remove(rem);
-								
-							}
-						}
-						
-						/*try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {
-							
-								Thread.currentThread().interrupt();;
-							
-							e.printStackTrace();
-						}*/
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		},0,1000/40,TimeUnit.MILLISECONDS);
 		
-		
-		
-		
+		Thread listener = new MainPacketListener(in, this);
+		listener.start();
 		
 	}
 
-	
-	
+
 	
 	@Override
 	public void render(float delta) {
