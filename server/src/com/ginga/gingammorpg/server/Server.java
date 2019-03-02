@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.transform.URIResolver;
 
-
+import com.ginga.gingammorpg.server.attacks.Attack;
 import com.ginga.gingammorpg.server.packets.EntityPacket;
 import com.ginga.gingammorpg.server.packets.RemoveEntityPacket;
 
@@ -48,6 +48,7 @@ public class Server {
 	int saveintervals = 1;
 	Statement state;
 	long memoryUsage = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+	ArrayList<AttackInterface> Attacks = new ArrayList<AttackInterface>();
 	
 	public Server() {
 		try {
@@ -97,8 +98,8 @@ public class Server {
 				Item current = new Item(ItemId, ItemName, ItemMaxQuantity, ItemDamage, ItemHealth, ItemDefense, ItemImage);
 				Items.add(current);
 			}
-			
-			
+			/// Add attacks to list
+			Attacks.add(new Attack(this));
 			
 			System.out.println("Server is up on port "+PORT+" With RAM: ");
 			System.out.println(RamUsage());
@@ -363,95 +364,14 @@ public class Server {
 	
 			//////APPLY ATTACK
 	public void ApplyAttack(UserHandler performer, byte EntityType, int ID, byte Attacktype){
-		int baseAttackPower = performer.level*10;
-		for(int i=0;i<3;i++){
-			if(performer.Items[i][0] != null){
-				baseAttackPower+=performer.Items[i][0].damage;
-			}
-		}
-		// LATER ADD RARE SPECIAL ITEMS, THAT ADDS BOOSTS.
-		
-		//	NEED TO REMAKE THIS SECTION. THE WHOLE IS A MESS
-		Random r = new Random();
-		int finalDamage =baseAttackPower+ r.nextInt(performer.level + performer.level+1)-performer.level;
-		if(Attacktype == AttackTypes.SPELL_ATTACK){
-		//////// 	SPELL_ATTACK
-			if(performer.mana < AttackTypes.SPELL_ATTACK_MANACOST){
-				return;
-			}
-			performer.mana-=AttackTypes.SPELL_ATTACK_MANACOST;
-			sendPlayerMana(performer);
-		if(EntityType == EntityPacket.MOB){
-			Mob victim = null;
-			for(int i=0;i<Mobs.size();i++){
-				Mob curr = Mobs.get(i);
-				if(curr.id == ID){
-					victim = curr;
-					
-					break;
-				}
-			}
-			
-			if(victim != null){
-				if(!((performer.x - victim.x) < AttackTypes.SPELL_ATTACK_RANGE && (performer.x - victim.x) > -AttackTypes.SPELL_ATTACK_RANGE && (performer.y - victim.y) < AttackTypes.SPELL_ATTACK_RANGE && (performer.y - victim.y) > -AttackTypes.SPELL_ATTACK_RANGE)){
-					return;
-				}
-				if(victim.isDead){
-					return;
-				}
-				
-				//************
-				victim.target = performer;
-				victim.MobState = Mob.MobAIStates.ATTACKING;
-				//***********
-				
-				System.out.println(performer.username+" Attacked "+victim.name+" and dealt "+finalDamage+" Damage");
-				//Send out attack animation to everyone
-				victim.health-=finalDamage;
-				if(victim.health <= 0){
-					//DEAD
-					victim.isDead = true;
-					removeMob(victim.id);
-					RespawnMob repsawn = new RespawnMob(victim.id, 2);
-					RespawnMobs.add(repsawn);
-					performer.xp+=victim.xpdrop;
-					sendPlayerExp(performer);
-					levelUpPlayer(performer);
-				}
-				//AI
-				
-			}
-		}else if(EntityType == EntityPacket.PLAYER){
-			
-			UserHandler victim = null;
-			for(int i=0;i<Players.size();i++){
-				UserHandler curr = Players.get(i);
-				if(curr.id == ID){
-					victim = curr;
-					
-					break;
-				}
-			}
-			if(victim != null){
-				if(!((performer.x - victim.x) < AttackTypes.SPELL_ATTACK_RANGE && (performer.x - victim.x) > -AttackTypes.SPELL_ATTACK_RANGE && (performer.y - victim.y) < AttackTypes.SPELL_ATTACK_RANGE && (performer.y - victim.y) > -AttackTypes.SPELL_ATTACK_RANGE)){
-					return;
-				}
-				System.out.println(performer.username+" Attacked "+victim.username+" and dealt "+finalDamage+" Damage");
-				
-			victim.Health-=finalDamage;
-			sendPlayerHealth(victim, victim.Health);
-			if(victim.Health <= 0){
-				//DEAD
-				removePlayer(victim.id);
-				//SET TO START POSITION
-				setPlayerCoords(victim, victim.Startregion, 100, 100, 90); //Majd a kezdõ koordinátákat a kezdõ helyre állítani.
-				victim.Health = victim.MaxHealth;
-				sendPlayerHealth(victim, victim.Health);
-			}
+		for(int i=0; i<Attacks.size();i++){
+			AttackInterface curr = Attacks.get(i);
+			if(curr.ID == Attacktype){
+				curr.Apply(performer, EntityType, ID);
+				break;
 			}
 		}
 		
-	}		/////////Spell attack end
 		
 	}
 	
