@@ -33,7 +33,7 @@ public class SetPlayerCoordinatesPacket extends Packet{
 				UserHandler u2 = server.Players.get(i);
 				if(u2.LoggedIn){
 					if(u2.regionByte != u.regionByte){
-						server.packets.add(new RemoveEntityPacket(u.id, u2.output, EntityPacket.PLAYER));
+						server.packets.add(new RemoveEntityPacket(u.id, u2, EntityPacket.PLAYER));
 					}
 				}
 			}

@@ -119,7 +119,8 @@ public class RemotePlayer extends Creature{
 			
 			@Override
 			public void run() {
-				sheet.dispose();
+				if(sheet != null)
+					sheet.dispose();
 				
 			}
 		});

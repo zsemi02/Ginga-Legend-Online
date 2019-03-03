@@ -15,11 +15,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.ginga.gingammorpg.screens.GameScreen;
 
 public class Mob extends Creature{
 
 	
-	public int id, health, max_health, styleID, damage, level, xpdrop;
+	public int id, max_health, styleID, damage, level, xpdrop;
 
 	public float rotation=90;
 	Body body;
@@ -31,8 +32,9 @@ public class Mob extends Creature{
 	public Animation<TextureRegion> anim;
 	int hpSizeTorenderMath = 0;
 	int hpRenderPixel = 100;
+	GameScreen game;
 	
-	public Mob(float width, float height,int id, String name, float x, float y, int Health, int max_health, int style_id, int damage, int level, int xpDrop, float rotation, Skin skin, World world) {
+	public Mob(float width, float height,int id, String name, float x, float y, int Health, int max_health, int style_id, int damage, int level, int xpDrop, float rotation, Skin skin, World world, GameScreen game) {
 		super(width, height, name, id, skin);
 		position.set(x, y);
 		this.max_health = max_health;
@@ -42,6 +44,7 @@ public class Mob extends Creature{
 		this.xpdrop = xpDrop;
 		this.rotation = rotation;
 		this.world = world;
+		this.game = game;
 		
 		hpSizeTorenderMath = max_health/hpRenderPixel;
 		
@@ -112,6 +115,7 @@ public class Mob extends Creature{
 		hp.setSize(Health/hpSizeTorenderMath, 6);
 		hp.setPosition(getPosition().x-hp.getWidth()/2, getPosition().y+height+3);
 		nameLabel.setPosition(body.getPosition().x-nameLabel.getWidth()/2, body.getPosition().y+height+height/2);
+		
 	}
 	
 	public Body getBody(){
@@ -123,7 +127,8 @@ public class Mob extends Creature{
 			
 			@Override
 			public void run() {
-				sheet.dispose();
+				if(sheet != null)
+					sheet.dispose();
 				
 			}
 		});

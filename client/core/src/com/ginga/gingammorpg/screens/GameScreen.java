@@ -5,6 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -134,7 +137,7 @@ public class GameScreen implements Screen{
 		p = new Player(x, y, health,MaxHealth, 30,30, world, username, 0, out, MapWidth*TileSize*mapScale, MapHeight*TileSize*mapScale, skin, level, mana, maxmana, xp, needexp, this);
 		camera.position.set(p.getPosition().x, p.getPosition().y, 0);
 		camera.update();
-		attack = new Attack(out);
+		attack = new Attack(out, this);
 		
 		hud = new PlayerHud(this,level, xp,needexp, money, mana,maxmana, health, MaxHealth, Slots);
 		inputMultiplexer.addProcessor(hud.stage);
@@ -143,13 +146,14 @@ public class GameScreen implements Screen{
 		tempv3 = camera.unproject(tempv3);
 		SwitchMapLablel.setPosition(tempv3.x, tempv3.y);
 		SwitchMapLablel.setVisible(false);
-	
+		
 		//batch.setProjectionMatrix(camera.combined);
 		//p = new Player(0, 1, 1, 1, 10, world);
 		
 		input = new InputController(){
 			@Override
 			public boolean keyDown(int keycode) {
+				if(world.isLocked()) return true;
 				switch(keycode){
 				case Keys.W:
 					if(!world.isLocked())
@@ -232,6 +236,7 @@ public class GameScreen implements Screen{
 			@Override
 			public boolean keyUp(int keycode) {
 				//System.out.println(p.getBody().getPosition().x+" "+p.getBody().getPosition().y);
+				if(world.isLocked()) return true;
 				switch(keycode){
 				case Keys.W:
 					if(!world.isLocked())
@@ -288,6 +293,7 @@ public class GameScreen implements Screen{
 				//System.out.println(deb.x+" "+deb.y);
 				testPoint.set(click);
 				hitBody = null;
+				if(!world.isLocked())
 				world.QueryAABB(callback, testPoint.x-0.1f, testPoint.y-0.1f, testPoint.x+0.1f, testPoint.y+0.1f);
 				
 				if(hitBody != null){
@@ -326,10 +332,10 @@ public class GameScreen implements Screen{
 		//Gdx.input.setInputProcessor(input);
 		inputMultiplexer.addProcessor(input);
 		Gdx.input.setInputProcessor(inputMultiplexer);
+		//Thread listener = new MainPacketListener(in, this);
+		ScheduledExecutorService exec = (ScheduledExecutorService) Executors.newSingleThreadScheduledExecutor();
+		exec.scheduleAtFixedRate(new MainPacketListener(in, this), 0, 10, TimeUnit.MICROSECONDS);
 		
-		
-		Thread listener = new MainPacketListener(in, this);
-		listener.start();
 		
 		
 	}
@@ -475,6 +481,7 @@ public class GameScreen implements Screen{
 		}
 		for(int i=0;i<Mobs.size();i++){
 			Mob remMob = Mobs.get(i);
+			
 			remMob.render(batch);
 			remMob.update();
 			

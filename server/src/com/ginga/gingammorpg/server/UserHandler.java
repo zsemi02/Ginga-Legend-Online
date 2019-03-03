@@ -39,7 +39,8 @@ public class UserHandler extends Thread{
 	
 	Socket client;
 	Statement state;
-	String username,  md5pass;
+	public String username;
+	String md5pass;
 	
 	byte[] encryptedPassInput = new byte[1024];
 	byte[] encryptedPass;
@@ -353,7 +354,9 @@ public class UserHandler extends Thread{
 				e.printStackTrace();
 			}
 	}
-	
+	public void logout(){
+		server.logout(this);
+	}
 	
 
 }

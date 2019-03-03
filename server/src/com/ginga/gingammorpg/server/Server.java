@@ -170,7 +170,7 @@ public class Server {
 												if(u.regionByte == u2.regionByte){
 													if((u.x -u2.x < 1000 && u.x-u2.x > -1000) && (u.y -u2.y < 1000 && u.y-u2.y > -1000)){
 														
-														EntityPacket e = new EntityPacket(EntityPacket.PLAYER, u2.x, u2.y,u2.rotation, u2.Health, u2.MaxHealth, u2.CharacterStyleID, u2.startRegionByte, u2.id, u2.username,u2.level, u.output);
+														EntityPacket e = new EntityPacket(EntityPacket.PLAYER, u2.x, u2.y,u2.rotation, u2.Health, u2.MaxHealth, u2.CharacterStyleID, u2.startRegionByte, u2.id, u2.username,u2.level, u);
 														packets.add(e);
 														/*boolean ok = e.SendPlayer();
 														
@@ -193,14 +193,15 @@ public class Server {
 										Mob current = Mobs.get(k);
 										if(u.regionByte == current.RegionByte){
 										if((u.x -current.x < 1000 && u.x-current.x > -1000) && (u.y -current.y < 1000 && u.y-current.y > -1000)){
-											//boolean MobSentOut = current.SendOut(u.output);
 											if(!current.isDead)
-												packets.add(new EntityPacket(EntityPacket.MOB, current.x, current.y, current.rotation, current.health, current.max_health, current.styleID, current.id, current.name, current.level, u.output, current.damage, current.xpdrop));
-											/*if(!MobSentOut){
-												logout(u);
-											}*/
+												packets.add(new EntityPacket(EntityPacket.MOB, current.x, current.y, current.rotation, current.health, current.max_health, current.styleID, current.id, current.name, current.level, u, current.damage, current.xpdrop));
+											
 										}
 										}
+									}
+									for(int k =0;k<RespawnMobs.size();k++){
+										RespawnMob res = RespawnMobs.get(k);
+										packets.add(new RemoveEntityPacket(res.id, u, EntityPacket.MOB));
 									}
 									
 								}//
@@ -322,7 +323,7 @@ public class Server {
 		for(int i=0;i<Players.size();i++){
 			UserHandler sendto = Players.get(i);
 			if(sendto.LoggedIn){
-				packets.add(new RemoveEntityPacket(u.id, sendto.output, EntityPacket.PLAYER));
+				packets.add(new RemoveEntityPacket(u.id, sendto, EntityPacket.PLAYER));
 				
 					
 				
@@ -386,14 +387,14 @@ public class Server {
 	public void removeMob(int id){
 		for(int i=0;i<Players.size();i++){
 			UserHandler sendto = Players.get(i);
-				packets.add(new RemoveEntityPacket(id, sendto.output, EntityPacket.MOB));
+				packets.add(new RemoveEntityPacket(id, sendto, EntityPacket.MOB));
 		}
 	}
 	public void removePlayer(int id){
 		for(int i=0;i<Players.size();i++){
 			UserHandler sendto = Players.get(i);
 			if(sendto.LoggedIn){
-				packets.add(new RemoveEntityPacket(id, sendto.output, EntityPacket.PLAYER));
+				packets.add(new RemoveEntityPacket(id, sendto, EntityPacket.PLAYER));
 			}
 		}
 	}

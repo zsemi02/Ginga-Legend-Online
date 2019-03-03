@@ -8,7 +8,7 @@ import com.ginga.gingammorpg.entity.Creature;
 import com.ginga.gingammorpg.entity.EntityPacket;
 import com.ginga.gingammorpg.entity.Entity.EntityType;
 
-public class AttackPacket {
+public class AttackPacket extends Packet{
 	Creature Attacker, Victim;
 	byte spell;
 	DataOutputStream out;

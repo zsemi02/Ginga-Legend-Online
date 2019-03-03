@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import com.ginga.gingammorpg.server.OpCodes;
+import com.ginga.gingammorpg.server.UserHandler;
 
 public class EntityPacket extends Packet{
 	
@@ -17,8 +18,9 @@ public class EntityPacket extends Packet{
 	String name;
 	float rotation;
 	int damage, xpdrop;
+	UserHandler u;
 	
-	public EntityPacket(byte type, float x, float y,float rotation, int health, int maxHealth, int StyleID, byte StartingRegion,int id, String name,int level, DataOutputStream out) {
+	public EntityPacket(byte type, float x, float y,float rotation, int health, int maxHealth, int StyleID, byte StartingRegion,int id, String name,int level, UserHandler u) {
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -31,8 +33,10 @@ public class EntityPacket extends Packet{
 		this.name = name;
 		this.level = level;
 		this.rotation = rotation;
+		this.u = u;
+		out = u.output;
 	}
-	public EntityPacket(byte type, float x, float y,float rotation, int health, int maxHealth, int StyleID, int id, String name,int level, DataOutputStream out, int damage, int xpdrop) {
+	public EntityPacket(byte type, float x, float y,float rotation, int health, int maxHealth, int StyleID, int id, String name,int level,  UserHandler u, int damage, int xpdrop) {
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -47,13 +51,15 @@ public class EntityPacket extends Packet{
 		this.rotation = rotation;
 		this.damage = damage;
 		this.xpdrop = xpdrop;
+		this.u = u;
+		out = u.output;
 	}
 	
 	public void send(){
 		if(type == EntityPacket.PLAYER) SendPlayer();
 		if(type == EntityPacket.MOB) sendMob();
 	}
-	public boolean SendPlayer(){
+	public void SendPlayer(){
 		try {
 			out.writeByte(OpCodes.ADD_ENTITY);
 			out.writeByte(type);
@@ -68,12 +74,10 @@ public class EntityPacket extends Packet{
 			out.writeInt(maxHealth);
 			out.writeInt(level);
 			out.flush();
-			return true;
 			
 		} catch (IOException e) {
-			
 			e.printStackTrace();
-			return false;
+			u.logout();
 		}
 	}
 	public void sendMob(){
@@ -95,7 +99,7 @@ public class EntityPacket extends Packet{
 		
 		} catch (IOException e) {
 			e.printStackTrace();
-			
+			u.logout();
 		}
 	}
 	

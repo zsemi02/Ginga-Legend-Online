@@ -2,15 +2,19 @@ package com.ginga.gingammorpg.net;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.Array;
 import com.ginga.gingammorpg.entity.EntityPacket;
 import com.ginga.gingammorpg.entity.Mob;
 import com.ginga.gingammorpg.entity.RemotePlayer;
 import com.ginga.gingammorpg.screens.GameScreen;
 import com.ginga.gingammorpg.screens.MainMenu;
 
-public class MainPacketListener extends Thread{
+public class MainPacketListener implements Runnable{
 	DataInputStream in;
 	GameScreen game;
 
@@ -34,9 +38,7 @@ public class MainPacketListener extends Thread{
 			
 			if(in.available() > 0){
 				byte OP = in.readByte();
-				if(OP != PacketTypes.ADD_ENTITY){
-					System.out.println("Recv. OP: "+OP);
-				}
+				
 				if(OP == PacketTypes.ADD_ENTITY){
 					byte type = in.readByte();
 					if(type == EntityPacket.PLAYER){
@@ -101,7 +103,7 @@ public class MainPacketListener extends Thread{
 						}
 						if(!isLoaded){
 							if(!game.world.isLocked()){
-							Mob newMob = new Mob(30, 30, MobId, MobName, Mobx, Moby, MobHealth, MobMaxHealth, MobStyleID, MobDamage, MobLevel, MobXpDrop, MobRotation, game.skin, game.world);
+							Mob newMob = new Mob(30, 30, MobId, MobName, Mobx, Moby, MobHealth, MobMaxHealth, MobStyleID, MobDamage, MobLevel, MobXpDrop, MobRotation, game.skin, game.world, game);
 							game.Mobs.add(newMob);
 							
 							}
@@ -112,7 +114,6 @@ public class MainPacketListener extends Thread{
 				}else if(OP == PacketTypes.REMOVE_ENTITY){
 					byte Removetype = in.readByte();
 					int RemovableID = in.readInt();
-					System.out.println("Removetype: "+Removetype);
 					
 					if(Removetype == EntityPacket.PLAYER){
 					for(int k = 0;k<game.RemotePlayers.size();k++){
@@ -130,12 +131,18 @@ public class MainPacketListener extends Thread{
 						for(int k = 0;k<game.Mobs.size();k++){
 							Mob rem = game.Mobs.get(k);
 							if(rem.ID == RemovableID){
+								
 								if(game.Selected == rem){
 									game.hud.targetVisible=false;
 								}
-								game.world.destroyBody(rem.getBody());
-								game.Mobs.remove(rem);
-								rem.dispose();
+								do{
+									if(!game.world.isLocked()){
+										game.world.destroyBody(rem.getBody());
+										game.Mobs.remove(rem);
+										rem.dispose();
+									}
+								}while(game.world.isLocked());
+								
 							}
 						}
 					}
@@ -224,7 +231,6 @@ public class MainPacketListener extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		
 	
 			

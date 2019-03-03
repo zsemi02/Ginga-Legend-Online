@@ -59,7 +59,7 @@ public class AttackInterface {
 			victim.MobState = Mob.MobAIStates.ATTACKING;
 			
 			victim.health-=finalDamage;
-			
+	
 			if(victim.health <= 0){
 				//DEAD
 				victim.isDead = true;
@@ -90,9 +90,11 @@ public class AttackInterface {
 			if(victim.Items[i][0] == null) continue;
 			finalDamage-=victim.Items[i][0].defense;
 		}
+		
 		BeforeDamage(performer, victim);
 		victim.Health-=finalDamage;
 		server.sendPlayerHealth(victim);
+		System.out.println(performer.username+" Attacked "+victim.username+" Dealt "+finalDamage);
 		if(victim.Health <= 0){
 			//DEAD
 			server.removePlayer(victim.id);
