@@ -2,7 +2,7 @@ package com.ginga.gingammorpg.server.packets;
 
 import com.ginga.gingammorpg.server.Data;
 
-public class MovePacket extends Data{
+public class MovePacket extends Packet{
 	float x,y;
 	
 	public MovePacket(float x, float y) {

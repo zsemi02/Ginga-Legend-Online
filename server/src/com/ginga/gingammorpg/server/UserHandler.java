@@ -45,15 +45,19 @@ public class UserHandler extends Thread{
 	byte[] encryptedPass;
 	int EncryptedLength = 0;
 	
-	float x,y, rotation=90;
-	String Region;
+	public float x,y, rotation=90;
+	public String Region;
 	byte regionByte, startRegionByte, AttackVictimByte;
-	int money, id;
+	public int money, id;
 	String Startregion;
-	int Health, MaxHealth;
+	public int Health, MaxHealth;
 	int CharacterStyleID;
 	int[][] ItemSlots = new int[8][2];
-	int level, xp, needxp, mana, max_mana;
+	int level;
+	public int xp;
+	int needxp;
+	public int mana;
+	int max_mana;
 	long lastupdated = System.currentTimeMillis();
 	boolean running = true;
 	Connection conn;
@@ -68,7 +72,7 @@ public class UserHandler extends Thread{
 	boolean Spell_Attack=false;
 	public boolean LoggedIn = false;
 	Server server;
-	DataOutputStream output;
+	public DataOutputStream output;
 	public Thread t = this;
 	public UserHandler(Server main,Socket client, Statement state, Connection conn) {
 		this.client = client;
@@ -126,6 +130,7 @@ public class UserHandler extends Thread{
 									int VictimID = be.readInt();
 									byte AttackType = be.readByte();
 									server.ApplyAttack(this, AttackVictimByte, VictimID, AttackType);
+									System.out.println("Attack package received!");
 								
 							}else if(b[0] == OpCodes.CHAT_MESSAGE){
 								String msg = be.readUTF();
@@ -306,7 +311,7 @@ public class UserHandler extends Thread{
 								
 							case OpCodes.MOVE:
 								LoggedIn = true;
-								MovePacket Movedata = (MovePacket) Data.MoveParser(x, y);
+								MovePacket Movedata = Data.MoveParser(x, y);
 								DecimalFormat df = new DecimalFormat("#.####");
 								x = Movedata.getX();
 								y = Movedata.getY();

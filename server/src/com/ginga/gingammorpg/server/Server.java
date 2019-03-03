@@ -3,12 +3,7 @@ package com.ginga.gingammorpg.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,17 +11,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.transform.URIResolver;
-
 import com.ginga.gingammorpg.server.attacks.Attack;
+import com.ginga.gingammorpg.server.attacks.Zetsu;
 import com.ginga.gingammorpg.server.packets.EntityPacket;
+import com.ginga.gingammorpg.server.packets.ExpPacket;
+import com.ginga.gingammorpg.server.packets.ManaPacket;
+import com.ginga.gingammorpg.server.packets.Packet;
 import com.ginga.gingammorpg.server.packets.RemoveEntityPacket;
 
 
@@ -49,6 +44,7 @@ public class Server {
 	Statement state;
 	long memoryUsage = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 	ArrayList<AttackInterface> Attacks = new ArrayList<AttackInterface>();
+	ArrayList<Packet> packets = new ArrayList<Packet>();
 	
 	public Server() {
 		try {
@@ -100,6 +96,13 @@ public class Server {
 			}
 			/// Add attacks to list
 			Attacks.add(new Attack(this));
+			Attacks.add(new Zetsu(this));
+			
+			for(int i=0; i<Attacks.size();i++){
+				AttackInterface curr = Attacks.get(i);
+				System.out.println(curr.ID);
+				
+			}
 			
 			System.out.println("Server is up on port "+PORT+" With RAM: ");
 			System.out.println(RamUsage());
@@ -168,13 +171,14 @@ public class Server {
 													if((u.x -u2.x < 1000 && u.x-u2.x > -1000) && (u.y -u2.y < 1000 && u.y-u2.y > -1000)){
 														
 														EntityPacket e = new EntityPacket(EntityPacket.PLAYER, u2.x, u2.y,u2.rotation, u2.Health, u2.MaxHealth, u2.CharacterStyleID, u2.startRegionByte, u2.id, u2.username,u2.level, u.output);
-														boolean ok = e.SendPlayer();
+														packets.add(e);
+														/*boolean ok = e.SendPlayer();
 														
 														if(!ok){
 															logout(u);
 														}else{
 															//System.out.println("Sent to: "+u.username+" Data: "+u2.username+" "+u2.x+" "+u2.id);
-														}
+														}*/
 														
 													}
 												}
@@ -189,10 +193,12 @@ public class Server {
 										Mob current = Mobs.get(k);
 										if(u.regionByte == current.RegionByte){
 										if((u.x -current.x < 1000 && u.x-current.x > -1000) && (u.y -current.y < 1000 && u.y-current.y > -1000)){
-											boolean MobSentOut = current.SendOut(u.output);
-											if(!MobSentOut){
+											//boolean MobSentOut = current.SendOut(u.output);
+											if(!current.isDead)
+												packets.add(new EntityPacket(EntityPacket.MOB, current.x, current.y, current.rotation, current.health, current.max_health, current.styleID, current.id, current.name, current.level, u.output, current.damage, current.xpdrop));
+											/*if(!MobSentOut){
 												logout(u);
-											}
+											}*/
 										}
 										}
 									}
@@ -203,6 +209,11 @@ public class Server {
 							for(int i=0;i<Mobs.size();i++){
 								Mob mob = Mobs.get(i);
 								mob.act();
+							}
+							for(int i=0;i<packets.size();i++){
+								Packet p = packets.get(i);
+								p.send();
+								packets.remove(p);
 							}
 					
 				}
@@ -366,6 +377,7 @@ public class Server {
 	public void ApplyAttack(UserHandler performer, byte EntityType, int ID, byte Attacktype){
 		for(int i=0; i<Attacks.size();i++){
 			AttackInterface curr = Attacks.get(i);
+			System.out.println(curr.ID);
 			if(curr.ID == Attacktype){
 				curr.Apply(performer, EntityType, ID);
 				break;
@@ -410,7 +422,7 @@ public class Server {
 		u.x = x;
 		u.y = y;
 		u.rotation = rotation;
-		
+		System.out.println("Set coords for "+u.username);
 		try {
 			u.output.writeByte(OpCodes.SET_COORDINATES);
 			u.output.writeByte(u.regionByte);
@@ -450,29 +462,17 @@ public class Server {
 			u.output.writeByte(OpCodes.SET_MAXHP);
 			u.output.writeInt(Maxhp);
 			u.output.flush();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 	}
 	public void sendPlayerMana(UserHandler u){
-		try {
-			u.output.writeByte(OpCodes.SET_MANA);
-			u.output.writeInt(u.mana);
-			u.output.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		packets.add(new ManaPacket(u));
 	}
 	public void sendPlayerExp(UserHandler u){
-		try {
-			u.output.writeByte(OpCodes.SET_EXP);
-			u.output.writeInt(u.xp);
-			u.output.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		packets.add(new ExpPacket(u));
 		
 	}
 	

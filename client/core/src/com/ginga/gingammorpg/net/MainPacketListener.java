@@ -26,6 +26,9 @@ public class MainPacketListener extends Thread{
 			
 			if(in.available() > 0){
 				byte OP = in.readByte();
+				if(OP != PacketTypes.ADD_ENTITY){
+					System.out.println("Recv. OP: "+OP);
+				}
 				if(OP == PacketTypes.ADD_ENTITY){
 					byte type = in.readByte();
 					if(type == EntityPacket.PLAYER){
@@ -101,7 +104,7 @@ public class MainPacketListener extends Thread{
 				}else if(OP == PacketTypes.REMOVE_ENTITY){
 					byte Removetype = in.readByte();
 					int RemovableID = in.readInt();
-					System.out.println(Removetype);
+					System.out.println("Removetype: "+Removetype);
 					
 					if(Removetype == EntityPacket.PLAYER){
 					for(int k = 0;k<game.RemotePlayers.size();k++){

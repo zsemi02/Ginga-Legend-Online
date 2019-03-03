@@ -69,14 +69,17 @@ public class Mob extends Creature{
 			//anim = GifDecoder.loadGIFAnimation(PlayMode.LOOP, Gdx.files.internal("img/character/style1.gif").read());
 			//t = new Texture("img/character/gin1.png");
 			//style = new Sprite(t);
-			
-			sheet = new Texture("img/character/style1sheet.png");	//késöbb megcsinálni normálisan Style ID alapján.
+			try{
+			sheet = new Texture(ParseStyleID.parse(styleID));	//késöbb megcsinálni normálisan Style ID alapján.
 			TextureRegion[] animRegion = new TextureRegion[2];
 			animRegion[0] = TextureRegion.split(sheet, 64, 64)[0][0];
 			animRegion[1] = TextureRegion.split(sheet, 64, 64)[0][1];
 			anim = new Animation<TextureRegion>(0.1f, animRegion);
 			anim.setPlayMode(PlayMode.LOOP);
-			
+			}catch(java.lang.NullPointerException e){
+				System.out.println("Styleid crash: "+styleID);
+				e.printStackTrace();
+			}
 			
 			nameLabel = new Label("Lv."+level+" "+name, skin, "namelabel");
 			

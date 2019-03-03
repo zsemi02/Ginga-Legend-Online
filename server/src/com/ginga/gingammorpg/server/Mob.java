@@ -9,7 +9,9 @@ public class Mob {
 	
 	int id, health, max_health, styleID, damage, level, xpdrop;
 	String name, region;
-	float x,y, rotation;
+	public float x;
+	public float y;
+	float rotation;
 	byte RegionByte;
 	public boolean isDead = false;
 	public static enum MobAIStates{
@@ -82,7 +84,7 @@ public class Mob {
 	public boolean SendOut(DataOutputStream out){
 		if(!isDead){
 		try {
-			out.writeShort(OpCodes.ADD_ENTITY);
+			out.writeByte(OpCodes.ADD_ENTITY);
 			out.writeByte(EntityPacket.MOB);
 			out.writeInt(id);
 			out.writeUTF(name);

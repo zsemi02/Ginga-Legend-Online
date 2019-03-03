@@ -103,8 +103,12 @@ public class PlayerHud{
 		
 		TextureAtlas atlas = new TextureAtlas("ui/hud.atlas");
 		TextureAtlas menu = new TextureAtlas("ui/LoginTextField.atlas");
+		
 		Texture spell_attack = new Texture("ui/spell_attack.png");
 		Image spell_attack_sprite = new Image(spell_attack);
+		Texture spell_zetsu = new Texture("ui/spell_attack.png");
+		Image spell_zetsu_sprite = new Image(spell_attack);
+		
 		
 		MenuSkin = new Skin(Gdx.files.internal("jsons/MenuSkin.json"), menu);
 		
@@ -179,33 +183,20 @@ public class PlayerHud{
 			mainHUDTable.setDebug(false);
 			
 			Chattext = new Table(HudSkin);
-			/*Table topLeftTable = new Table();
-			//topLeftTable.setFillParent(true);
-				topLeftTable.setDebug(true);
-				topLeftTable.add(levelLabel).expand().row();
-				topLeftTable.add(moneyLabel);
-				topLeftTable.top().left().padTop(0).padLeft(0);
-			Table bottomLeftTable = new Table();
-			//bottomLeftTable.setFillParent(true);
-				bottomLeftTable.setDebug(true);
-				bottomLeftTable.add(hpLabel).expand().row();
-				bottomLeftTable.add(manaLabel).row();
-				bottomLeftTable.add(expLabel);
-				bottomLeftTable.bottom().left().padBottom(0).padLeft(0);*/
+
 			Table SpellHud = new Table();
-			//SpellHud.setFillParent(true);
 				SpellHud.setDebug(false);
 				SpellHud.left();
 				SpellHud.background(HudSkin.getDrawable("hud"));
 				
 				SpellHud.add(spell_attack_sprite).size(expProgress.getHeight(), expProgress.getHeight());
+				if(screen.level >= 50)
+					SpellHud.add(spell_zetsu_sprite).size(expProgress.getHeight(),expProgress.getHeight());
 				/*
 				 * Check the level, and add the other spells too!
 				 * */
 			
-			/*mainHUDTable.add(topLeftTable).expand().top().left();
-			mainHUDTable.add(bottomLeftTable).expand().bottom().left();*/
-			//mainHUDTable.add(SpellHud).bottom();
+			
 			mainHUDTable.left();
 			mainHUDTable.add(levelLabel).width(hpProgress.getWidth()).row();
 			mainHUDTable.add(moneyLabel).width(hpProgress.getWidth()).row();

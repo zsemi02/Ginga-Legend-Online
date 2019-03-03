@@ -5,11 +5,12 @@ import java.util.Random;
 import com.ginga.gingammorpg.server.packets.EntityPacket;
 
 public class AttackInterface {
-	public static byte ID;
-	public static int ATTACK_RANGE;
-	public static int MANA_COST;
-	public static float AVERAGE_DAMAGE;
-	Server server;
+	public byte ID;
+	public int ATTACK_RANGE;
+	public int MANA_COST;
+	public int AVERAGE_DAMAGE = 1;
+	public int REQUIRED_LEVEL = 1;
+	protected Server server;
 	
 	public AttackInterface(Server server) {
 		this.server = server;
@@ -17,6 +18,7 @@ public class AttackInterface {
 	
 	
 	public void Apply(UserHandler performer, byte EntityType, int ID){
+		if(performer.level < REQUIRED_LEVEL) return;
 		if(performer.mana < MANA_COST)
 			return;
 		performer.mana -= MANA_COST;
@@ -29,7 +31,8 @@ public class AttackInterface {
 			}
 		}
 		Random r = new Random();
-		int finalDamage =baseAttackPower+ r.nextInt(performer.level + performer.level+1)-performer.level;
+		//int finalDamage =baseAttackPower+ r.nextInt(performer.level + performer.level+1)-performer.level;
+		int finalDamage =baseAttackPower+ r.nextInt(AVERAGE_DAMAGE);
 		
 		
 		if(EntityType == EntityPacket.MOB){
@@ -50,7 +53,7 @@ public class AttackInterface {
 				if(victim.isDead){
 					return;
 				}
-				
+				BeforeDamage(performer, victim);
 				
 			victim.target = performer;
 			victim.MobState = Mob.MobAIStates.ATTACKING;
@@ -67,6 +70,7 @@ public class AttackInterface {
 				server.sendPlayerExp(performer);
 				server.levelUpPlayer(performer);
 			}
+			AfterDamage(performer, victim);
 			
 	}else if(EntityType == EntityPacket.PLAYER){	// Mob end
 		
@@ -85,6 +89,7 @@ public class AttackInterface {
 		for(int i=0;i<3;i++){
 			finalDamage-=victim.Items[i][0].defense;
 		}
+		BeforeDamage(performer, victim);
 		victim.Health-=finalDamage;
 		server.sendPlayerHealth(victim, victim.Health);
 		if(victim.Health <= 0){
@@ -95,8 +100,25 @@ public class AttackInterface {
 			victim.Health = victim.MaxHealth;
 			server.sendPlayerHealth(victim, victim.Health);
 		}
+		AfterDamage(performer, victim);
 	}// Player end
 		
 	
 }
+	
+	public void BeforeDamage(UserHandler performer, Mob victim) {
+	
+	}
+	
+	public void BeforeDamage(UserHandler performer, UserHandler victim) {
+		
+	}
+	
+	public void AfterDamage(UserHandler performer, Mob victim) {
+		System.out.println("Attack applied with "+ID);
+	}
+	public void AfterDamage(UserHandler performer, UserHandler victim) {
+		
+	}
+	
 }

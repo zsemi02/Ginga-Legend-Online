@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.ginga.gingammorpg.server.OpCodes;
 
-public class RemoveEntityPacket {
+public class RemoveEntityPacket extends Packet{
 
 	int id;
 	DataOutputStream out;

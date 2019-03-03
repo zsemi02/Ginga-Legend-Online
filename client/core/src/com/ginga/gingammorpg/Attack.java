@@ -13,7 +13,8 @@ import com.ginga.gingammorpg.net.PacketTypes;
 public class Attack {
 	
 	public enum AttackType{
-		SPELL_ATTACK
+		SPELL_ATTACK,
+		SPELL_ZETSU
 	}
 	
 	
@@ -35,25 +36,20 @@ public class Attack {
 		
 		case SPELL_ATTACK:
 			if((Attacker.getPosition().x - Victim.getPosition().x) < AttackTypes.SPELL_ATTACK_RANGE && (Attacker.getPosition().x - Victim .getPosition().x) > -AttackTypes.SPELL_ATTACK_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) < AttackTypes.SPELL_ATTACK_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) > -AttackTypes.SPELL_ATTACK_RANGE){
-				
-				/*try {
-					out.writeByte(PacketTypes.PERFORM_ATTACK);
-					if(Victim.getEntityType().equals(EntityType.MOB)){
-						out.writeByte(EntityPacket.MOB);
-					}else if(Victim.getEntityType().equals(EntityType.PLAYER)){
-						out.writeByte(EntityPacket.PLAYER);
-					}
-					out.writeInt(Victim.ID);
-					out.writeByte(AttackTypes.SPELL_ATTACK);
-					out.flush();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}*/
+
 				new AttackPacket(out, Attacker, Victim, AttackTypes.SPELL_ATTACK).send();
 			}else{
 				System.out.println("You need to be closer to use this attack on the target!");
 			}
 			
+			break;
+		case SPELL_ZETSU:
+			if((Attacker.getPosition().x - Victim.getPosition().x) < AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE && (Attacker.getPosition().x - Victim .getPosition().x) > -AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) < AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) > -AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE){
+
+				new AttackPacket(out, Attacker, Victim, AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA).send();
+			}else{
+				System.out.println("You need to be closer to use this attack on the target!");
+			}
 			break;
 		default:
 			break;

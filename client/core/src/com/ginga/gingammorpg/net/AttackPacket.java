@@ -31,6 +31,7 @@ public class AttackPacket {
 			out.writeInt(Victim.ID);
 			out.writeByte(spell);
 			out.flush();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

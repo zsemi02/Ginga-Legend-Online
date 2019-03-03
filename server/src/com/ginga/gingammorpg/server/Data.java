@@ -27,7 +27,7 @@ public class Data {
 	}
 	
 	
-	public static Data MoveParser(float x, float y){
+	public static MovePacket MoveParser(float x, float y){
 		return new MovePacket(x, y);
 		
 	}

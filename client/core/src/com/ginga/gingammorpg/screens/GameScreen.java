@@ -54,6 +54,7 @@ import com.ginga.gingammorpg.InputController;
 import com.ginga.gingammorpg.entity.Creature;
 import com.ginga.gingammorpg.entity.EntityPacket;
 import com.ginga.gingammorpg.entity.Mob;
+import com.ginga.gingammorpg.entity.ParseStyleID;
 import com.ginga.gingammorpg.entity.Player;
 import com.ginga.gingammorpg.entity.RemotePlayer;
 import com.ginga.gingammorpg.net.MainPacketListener;
@@ -155,7 +156,6 @@ public class GameScreen implements Screen{
 		camera.update();
 		attack = new Attack(out);
 		
-		
 		hud = new PlayerHud(this,level, xp,needexp, money, mana,maxmana, health, MaxHealth, Slots);
 		inputMultiplexer.addProcessor(hud.stage);
 		
@@ -229,6 +229,7 @@ public class GameScreen implements Screen{
 					hud.Open(PlayerHud.OpenType.INVENTORY);
 					//Gdx.input.setInputProcessor(hud.stage);
 					break;
+					/** ADD ATTACKS **/
 				case Keys.NUM_1:
 					SpellCasted = true;
 					if(Selected != null){
@@ -236,6 +237,13 @@ public class GameScreen implements Screen{
 						
 					}
 					
+					break;
+				case Keys.NUM_2:
+						SpellCasted = true;
+						if(Selected != null){
+							attack.PerformAttack(p, Selected, AttackType.SPELL_ZETSU);
+							
+						}
 					break;
 				}
 					
@@ -268,8 +276,12 @@ public class GameScreen implements Screen{
 				case Keys.ENTER:
 					isTravel=false;
 					break;
+					/** SPELLS ADD HERE TOO **/
 				case Keys.NUM_1:
 					SpellCasted=false;
+					break;
+				case Keys.NUM_2:
+					SpellCasted = false;
 					break;
 				}
 				return true;
