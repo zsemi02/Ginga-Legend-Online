@@ -87,18 +87,19 @@ public class AttackInterface {
 		if(!((performer.x - victim.x) < ATTACK_RANGE && (performer.x - victim.x) > -ATTACK_RANGE && (performer.y - victim.y) < ATTACK_RANGE && (performer.y - victim.y) > -ATTACK_RANGE))
 			return;
 		for(int i=0;i<3;i++){
+			if(victim.Items[i][0] == null) continue;
 			finalDamage-=victim.Items[i][0].defense;
 		}
 		BeforeDamage(performer, victim);
 		victim.Health-=finalDamage;
-		server.sendPlayerHealth(victim, victim.Health);
+		server.sendPlayerHealth(victim);
 		if(victim.Health <= 0){
 			//DEAD
 			server.removePlayer(victim.id);
 			//SET TO START POSITION
 			server.setPlayerCoords(victim, victim.Startregion, 100, 100, 90); //Set this to start coordinates
 			victim.Health = victim.MaxHealth;
-			server.sendPlayerHealth(victim, victim.Health);
+			server.sendPlayerHealth(victim);
 		}
 		AfterDamage(performer, victim);
 	}// Player end
@@ -115,7 +116,6 @@ public class AttackInterface {
 	}
 	
 	public void AfterDamage(UserHandler performer, Mob victim) {
-		System.out.println("Attack applied with "+ID);
 	}
 	public void AfterDamage(UserHandler performer, UserHandler victim) {
 		

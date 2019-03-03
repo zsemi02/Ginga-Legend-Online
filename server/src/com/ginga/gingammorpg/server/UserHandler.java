@@ -47,17 +47,19 @@ public class UserHandler extends Thread{
 	
 	public float x,y, rotation=90;
 	public String Region;
-	byte regionByte, startRegionByte, AttackVictimByte;
+	public byte regionByte;
+	byte startRegionByte;
+	byte AttackVictimByte;
 	public int money, id;
 	String Startregion;
 	public int Health, MaxHealth;
-	int CharacterStyleID;
-	int[][] ItemSlots = new int[8][2];
-	int level;
+	public int CharacterStyleID;
+	public int[][] ItemSlots = new int[8][2];
+	public int level;
 	public int xp;
-	int needxp;
+	public int needxp;
 	public int mana;
-	int max_mana;
+	public int max_mana;
 	long lastupdated = System.currentTimeMillis();
 	boolean running = true;
 	Connection conn;
@@ -157,10 +159,10 @@ public class UserHandler extends Thread{
 										}
 									}
 									MaxHealth = 100+HealthToAdd;
-									server.sendPlayerMaxHealth(this, MaxHealth);
+									server.sendPlayerMaxHealth(this);
 									if(Health > MaxHealth){
 										Health = MaxHealth;
-										server.sendPlayerHealth(this, Health);
+										server.sendPlayerHealth(this);
 									}
 								
 							}
@@ -331,7 +333,7 @@ public class UserHandler extends Thread{
 							}
 							if(Health < MaxHealth){
 								Health+=1;	
-								server.sendPlayerHealth(this, Health);
+								server.sendPlayerHealth(this);
 							}
 							lastupdated = System.currentTimeMillis();
 						}

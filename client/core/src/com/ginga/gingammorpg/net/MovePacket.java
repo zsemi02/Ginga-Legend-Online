@@ -14,7 +14,7 @@ import com.ginga.gingammorpg.screens.MainMenu;
 
 
 
-public class MovePacket {
+public class MovePacket extends Packet{
 	int packettype = PacketTypes.MOVE;
 	float x,y, rotation;
 	byte[] s = new byte[9];
@@ -50,7 +50,7 @@ public class MovePacket {
 		System.out.println();*/
 	}
 	
-	public void Send(){
+	public void send(){
 		try {
 			out.writeByte(packettype);
 			out.writeFloat(x);

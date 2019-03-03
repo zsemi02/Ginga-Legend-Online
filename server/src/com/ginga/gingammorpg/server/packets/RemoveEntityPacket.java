@@ -16,17 +16,14 @@ public class RemoveEntityPacket extends Packet{
 		this.type = type;
 	}
 	
-	public boolean Send(){
+	public void send(){
 		try {
 			out.writeByte(OpCodes.REMOVE_ENTITY);
 			out.writeByte(type);
-			System.out.println(type);
 			out.writeInt(id);
 			out.flush();
-			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
 		}
 	}
 	

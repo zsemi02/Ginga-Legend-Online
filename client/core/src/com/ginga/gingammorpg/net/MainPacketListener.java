@@ -22,6 +22,14 @@ public class MainPacketListener extends Thread{
 	@Override
 	public void run() {
 		while(true){
+			
+				for(int i=0;i<game.packets.size();i++){
+					Packet curr = game.packets.get(i);
+					if(curr != null)
+						curr.send();
+					game.packets.remove(curr);
+				}
+			
 		try {
 			
 			if(in.available() > 0){
@@ -216,7 +224,11 @@ public class MainPacketListener extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		}
+		
+		
+	
+			
+		} // While end
 	}
 
 }

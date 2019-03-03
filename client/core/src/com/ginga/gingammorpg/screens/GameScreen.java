@@ -1,65 +1,44 @@
 package com.ginga.gingammorpg.screens;
 
-import java.awt.image.PixelGrabber;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.ws.handler.MessageContext.Scope;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.ginga.gingammorpg.Attack;
 import com.ginga.gingammorpg.Attack.AttackType;
 import com.ginga.gingammorpg.InputController;
 import com.ginga.gingammorpg.entity.Creature;
-import com.ginga.gingammorpg.entity.EntityPacket;
 import com.ginga.gingammorpg.entity.Mob;
-import com.ginga.gingammorpg.entity.ParseStyleID;
 import com.ginga.gingammorpg.entity.Player;
 import com.ginga.gingammorpg.entity.RemotePlayer;
 import com.ginga.gingammorpg.net.MainPacketListener;
 import com.ginga.gingammorpg.net.MapIDs;
 import com.ginga.gingammorpg.net.MovePacket;
+import com.ginga.gingammorpg.net.Packet;
 import com.ginga.gingammorpg.net.PacketTypes;
 
 public class GameScreen implements Screen{
@@ -102,6 +81,7 @@ public class GameScreen implements Screen{
 	TmxMapLoader loader;
 	int[][] Slots;
 	InputMultiplexer inputMultiplexer;
+	public ArrayList<Packet> packets = new ArrayList<Packet>();
 	
 	
 	public GameScreen(Socket socket, float x, float y, byte RegionByte, String username, int health, int maxHealth, int level, int xp,int needexp, int money, int mana, int maxmana, int[][] Slots) {
@@ -151,7 +131,7 @@ public class GameScreen implements Screen{
 		TextureAtlas a = new TextureAtlas("ui/LoginTextField.atlas");
 		skin = new Skin(Gdx.files.internal("jsons/MenuSkin.json"),a);
 		SwitchMapLablel = new Label("Press [Enter] to go to XXXXX", skin);
-		p = new Player(x, y, health,MaxHealth, 30,30, world, username, 0, out, MapWidth*TileSize*mapScale, MapHeight*TileSize*mapScale, skin, level, mana, maxmana, xp, needexp);
+		p = new Player(x, y, health,MaxHealth, 30,30, world, username, 0, out, MapWidth*TileSize*mapScale, MapHeight*TileSize*mapScale, skin, level, mana, maxmana, xp, needexp, this);
 		camera.position.set(p.getPosition().x, p.getPosition().y, 0);
 		camera.update();
 		attack = new Attack(out);
@@ -351,12 +331,14 @@ public class GameScreen implements Screen{
 		Thread listener = new MainPacketListener(in, this);
 		listener.start();
 		
+		
 	}
 
 
 	
 	@Override
 	public void render(float delta) {
+
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	
@@ -587,8 +569,8 @@ public class GameScreen implements Screen{
 		p.rotation = rotation;
 		
 	
-		MovePacket m = new MovePacket(x, y, rotation, out);
-		m.Send();
+		packets.add(new MovePacket(x, y, rotation, out));
+
 		for(int i=0;i<Mobs.size();i++){
 			world.destroyBody(Mobs.get(i).getBody());
 			Mobs.get(i).dispose();

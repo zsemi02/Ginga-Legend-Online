@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.ginga.gingammorpg.net.MovePacket;
+import com.ginga.gingammorpg.screens.GameScreen;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -42,10 +43,10 @@ public class Player extends Creature{
 	public float rotation = 90;
 	int hpSizeTorenderMath = 0;
 	int hpRenderPixel = 100;
+	GameScreen game;
 	
 	
-	
-	public Player(float x, float y, int health, int maxhealth, float width, float height, World world, String name, int ID, DataOutputStream out, float mapWidth, float mapHeight, Skin skin, int level, int mana, int maxmana, int xp, int neededXp){
+	public Player(float x, float y, int health, int maxhealth, float width, float height, World world, String name, int ID, DataOutputStream out, float mapWidth, float mapHeight, Skin skin, int level, int mana, int maxmana, int xp, int neededXp, GameScreen game){
 		super(width, height, name, ID, skin);
 		getPosition().x = x;
 		getPosition().y = y;
@@ -62,6 +63,7 @@ public class Player extends Creature{
 		this.maxmana = maxmana;
 		this.xp = xp;
 		this.neededxp = neededXp;
+		this.game = game;
 		
 		hpSizeTorenderMath = maxhealth/hpRenderPixel;
 		
@@ -178,8 +180,7 @@ public class Player extends Creature{
 		//style.setY(getPosition().y-height);
 		if(lastPos.x != getPosition().x || lastPos.y != getPosition().y){
 			if(((lastPos.x-getPosition().x)>0.001f || (getPosition().x-lastPos.x)>0.001f) ||(lastPos.y-getPosition().y)>0.001f || (getPosition().y-lastPos.y)>0.001f){
-			MovePacket move = new MovePacket(getPosition().x, getPosition().y,rotation, out);
-			move.Send();
+			game.packets.add(new MovePacket(getPosition().x, getPosition().y,rotation, out));
 			lastPos.set(getPosition());
 			}
 		}

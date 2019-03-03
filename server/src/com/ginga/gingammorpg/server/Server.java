@@ -18,11 +18,17 @@ import java.util.concurrent.TimeUnit;
 
 import com.ginga.gingammorpg.server.attacks.Attack;
 import com.ginga.gingammorpg.server.attacks.Zetsu;
+import com.ginga.gingammorpg.server.packets.ChatMessagePacket;
 import com.ginga.gingammorpg.server.packets.EntityPacket;
 import com.ginga.gingammorpg.server.packets.ExpPacket;
+import com.ginga.gingammorpg.server.packets.HealthPacket;
+import com.ginga.gingammorpg.server.packets.LevelPacket;
 import com.ginga.gingammorpg.server.packets.ManaPacket;
+import com.ginga.gingammorpg.server.packets.MaxHealthPacket;
+import com.ginga.gingammorpg.server.packets.NeedxpPacket;
 import com.ginga.gingammorpg.server.packets.Packet;
 import com.ginga.gingammorpg.server.packets.RemoveEntityPacket;
+import com.ginga.gingammorpg.server.packets.SetPlayerCoordinatesPacket;
 
 
 
@@ -44,7 +50,7 @@ public class Server {
 	Statement state;
 	long memoryUsage = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 	ArrayList<AttackInterface> Attacks = new ArrayList<AttackInterface>();
-	ArrayList<Packet> packets = new ArrayList<Packet>();
+	public ArrayList<Packet> packets = new ArrayList<Packet>();
 	
 	public Server() {
 		try {
@@ -97,12 +103,6 @@ public class Server {
 			/// Add attacks to list
 			Attacks.add(new Attack(this));
 			Attacks.add(new Zetsu(this));
-			
-			for(int i=0; i<Attacks.size();i++){
-				AttackInterface curr = Attacks.get(i);
-				System.out.println(curr.ID);
-				
-			}
 			
 			System.out.println("Server is up on port "+PORT+" With RAM: ");
 			System.out.println(RamUsage());
@@ -217,7 +217,7 @@ public class Server {
 							}
 					
 				}
-			},0,1000/20,TimeUnit.MILLISECONDS);
+			},0,1000/60,TimeUnit.MILLISECONDS);
 			
 			
 			
@@ -322,11 +322,8 @@ public class Server {
 		for(int i=0;i<Players.size();i++){
 			UserHandler sendto = Players.get(i);
 			if(sendto.LoggedIn){
-				RemoveEntityPacket rem = new RemoveEntityPacket(u.id, sendto.output, EntityPacket.PLAYER);
-				boolean isSent = rem.Send();
-				if(!isSent){
-					logout(sendto);
-				}
+				packets.add(new RemoveEntityPacket(u.id, sendto.output, EntityPacket.PLAYER));
+				
 					
 				
 			}
@@ -377,7 +374,6 @@ public class Server {
 	public void ApplyAttack(UserHandler performer, byte EntityType, int ID, byte Attacktype){
 		for(int i=0; i<Attacks.size();i++){
 			AttackInterface curr = Attacks.get(i);
-			System.out.println(curr.ID);
 			if(curr.ID == Attacktype){
 				curr.Apply(performer, EntityType, ID);
 				break;
@@ -390,28 +386,14 @@ public class Server {
 	public void removeMob(int id){
 		for(int i=0;i<Players.size();i++){
 			UserHandler sendto = Players.get(i);
-			if(sendto.LoggedIn){
-				RemoveEntityPacket rem = new RemoveEntityPacket(id, sendto.output, EntityPacket.MOB);
-				boolean isSent = rem.Send();
-				if(!isSent){
-					logout(sendto);
-				}
-					
-				
-			}
+				packets.add(new RemoveEntityPacket(id, sendto.output, EntityPacket.MOB));
 		}
 	}
 	public void removePlayer(int id){
 		for(int i=0;i<Players.size();i++){
 			UserHandler sendto = Players.get(i);
 			if(sendto.LoggedIn){
-				RemoveEntityPacket rem = new RemoveEntityPacket(id, sendto.output, EntityPacket.PLAYER);
-				boolean isSent = rem.Send();
-				if(!isSent){
-					logout(sendto);
-				}
-				
-				
+				packets.add(new RemoveEntityPacket(id, sendto.output, EntityPacket.PLAYER));
 			}
 		}
 	}
@@ -422,51 +404,19 @@ public class Server {
 		u.x = x;
 		u.y = y;
 		u.rotation = rotation;
+		packets.add(new SetPlayerCoordinatesPacket(u, region, x, y, rotation, this));
 		System.out.println("Set coords for "+u.username);
-		try {
-			u.output.writeByte(OpCodes.SET_COORDINATES);
-			u.output.writeByte(u.regionByte);
-			u.output.writeUTF(u.Region);
-			u.output.writeFloat(u.x);
-			u.output.writeFloat(u.y);
-			u.output.writeFloat(u.rotation);
-			u.output.flush();
-			for(int i=0;i<Players.size();i++){
-				UserHandler u2 = Players.get(i);
-				if(u2.LoggedIn){
-					if(u2.regionByte != u.regionByte){
-						RemoveEntityPacket rem = new RemoveEntityPacket(u.id, u2.output, EntityPacket.PLAYER);
-						rem.Send();
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 		
 	}
 	
-	public void sendPlayerHealth(UserHandler u, int hp){
-		try {
-			u.output.writeByte(OpCodes.SET_HEALTH);
-			u.output.writeInt(hp);
-			u.output.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void sendPlayerHealth(UserHandler u){
+		packets.add(new HealthPacket(u));
 		
 	}
 	
-	public void sendPlayerMaxHealth(UserHandler u, int Maxhp){
-		try {
-			u.output.writeByte(OpCodes.SET_MAXHP);
-			u.output.writeInt(Maxhp);
-			u.output.flush();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+	public void sendPlayerMaxHealth(UserHandler u){
+		packets.add(new MaxHealthPacket(u));
 	}
 	public void sendPlayerMana(UserHandler u){
 		packets.add(new ManaPacket(u));
@@ -483,19 +433,9 @@ public class Server {
 			u.needxp = u.level*u.level*100;
 			u.xp = remainExp;
 			saveUser(state, u);
-			try {
-				u.output.writeByte(OpCodes.SET_LEVEL);
-				u.output.writeInt(u.level);
-				u.output.flush();
-				u.output.writeByte(OpCodes.SET_NEEDEDXP);
-				u.output.writeInt(u.needxp);
-				u.output.flush();
-				u.output.writeByte(OpCodes.SET_EXP);
-				u.output.writeInt(u.xp);
-				u.output.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			packets.add(new LevelPacket(u));
+			packets.add(new NeedxpPacket(u));
+			packets.add(new ExpPacket(u));
 			
 			levelUpPlayer(u);
 		}
@@ -504,14 +444,7 @@ public class Server {
 		if(!msg.startsWith("/")){
 		for(int i=0;i<Players.size();i++){
 			UserHandler u = Players.get(i);
-			try {
-				u.output.writeByte(OpCodes.CHAT_MESSAGE);
-				u.output.writeUTF(from);
-				u.output.writeUTF(msg);
-				u.output.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			packets.add(new ChatMessagePacket(u, from, msg));
 		}
 	}
 	}
@@ -527,36 +460,18 @@ public class Server {
 				UserHandler tosend = Players.get(i);
 				if(tosend.LoggedIn){
 					if(tosend.username.equalsIgnoreCase(parts[1])){
-						try {
-							tosend.output.writeByte(OpCodes.CHAT_MESSAGE);
-							tosend.output.writeUTF("<[PRIVATE]"+from+">");
-							tosend.output.writeUTF(msg.substring(tosend.username.length()+4));
-							tosend.output.flush();
-							u.output.writeByte(OpCodes.CHAT_MESSAGE);
-							u.output.writeUTF("<[PRIVATE]"+from+">->"+"<"+parts[1]+">");
-							u.output.writeUTF(msg.substring(tosend.username.length()+4));
-							u.output.flush();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						packets.add(new ChatMessagePacket(tosend, "<[PRIVATE]"+from+">", msg.substring(tosend.username.length()+4)));
+						packets.add(new ChatMessagePacket(u, "<[PRIVATE]"+from+">->"+"<"+parts[1]+">", msg.substring(tosend.username.length()+4)));
 					}
 				}
 			}
 		}else{
-			try {
-				u.output.writeByte(OpCodes.CHAT_MESSAGE);
-				u.output.writeUTF("<Server>");
-				u.output.writeUTF("No command like that");
-				u.output.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
+			packets.add(new ChatMessagePacket(u, "<Server>", "No command like that"));
 		}
 		}
 	
 	}
-	
+
 	
 	
 }

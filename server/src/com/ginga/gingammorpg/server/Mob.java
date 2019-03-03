@@ -20,7 +20,7 @@ public class Mob {
 	}
 	public MobAIStates MobState = MobAIStates.IDLE;
 	public UserHandler target = null;
-	public int TicksToAct = 16;
+	public int TicksToAct = 40;
 	public int currentTicks = 0;
 	Server server;
 
@@ -43,17 +43,18 @@ public class Mob {
 	
 	public void Attack(UserHandler target){
 		target.Health-=damage;	//Later maybe randomize the damage
-		server.sendPlayerHealth(target, target.Health);
+		server.sendPlayerHealth(target);
 		if(target.Health <= 0){
 			server.removePlayer(target.id);
 			server.setPlayerCoords(target, target.Region, 100, 100, 90);
 			target.Health=target.MaxHealth;
-			server.sendPlayerHealth(target, target.Health);
+			server.sendPlayerHealth(target);
 			target = null;
 		}
 	}
 	
 	public void act(){					// Run this in every second in a separate thread in the Main (?)
+		
 		if(currentTicks >= TicksToAct){
 		if(MobState == MobAIStates.IDLE){
 			
