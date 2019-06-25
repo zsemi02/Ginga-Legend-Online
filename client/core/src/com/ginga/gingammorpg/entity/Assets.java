@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class Assets {
 	
-	public static Texture defaultChar;
-	public static BitmapFont Arial;
+	public Texture defaultChar;
+	public BitmapFont Arial;
 	
 	public Assets(){
 		defaultChar = new Texture("img/character/style1sheet.png");

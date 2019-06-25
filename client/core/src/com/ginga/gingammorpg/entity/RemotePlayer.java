@@ -74,7 +74,7 @@ public class RemotePlayer extends Creature{
 			//style = new Sprite(t);
 			
 			//sheet = new Texture("img/character/style1sheet.png");	//késöbb megcsinálni normálisan Style ID alapján.
-			sheet = Assets.defaultChar;
+			sheet = game.assets.defaultChar;
 			
 			TextureRegion[] animRegion = new TextureRegion[sheet.getWidth()/64];
 			for(int i = 0; i<sheet.getWidth()/64; i++){

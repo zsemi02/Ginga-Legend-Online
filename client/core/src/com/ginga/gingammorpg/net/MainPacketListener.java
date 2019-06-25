@@ -173,8 +173,12 @@ public class MainPacketListener implements Runnable{
 					game.RegionByte = newRegionByte;
 					game.RegionName = newRegionString;
 					game.ChangePosition(newRegionString, newx, newy, newRotation);
+					
 				}else if(OP == PacketTypes.SET_HEALTH){
 					int newHP = in.readInt();
+					if (newHP < game.p.Health){
+						game.DamagedEntityEvent(game.p, game.p.Health-newHP);
+					}
 					game.p.Health = newHP;
 				
 				

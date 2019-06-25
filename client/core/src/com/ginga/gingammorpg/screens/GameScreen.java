@@ -106,6 +106,7 @@ public class GameScreen implements Screen{
 		this.Slots = Slots;
 		RegionName = MapIDs.Parsebyte(RegionByte);
 		inputMultiplexer = new InputMultiplexer();
+		assets = new Assets();
 		}
 	
 	
@@ -349,7 +350,7 @@ public class GameScreen implements Screen{
 		ScheduledExecutorService exec = (ScheduledExecutorService) Executors.newSingleThreadScheduledExecutor();
 		exec.scheduleAtFixedRate(new MainPacketListener(in, this), 0, 10, TimeUnit.MICROSECONDS);
 		
-		assets = new Assets();
+		
 		
 	}
 

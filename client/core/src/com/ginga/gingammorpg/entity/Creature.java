@@ -48,8 +48,12 @@ public class Creature extends Entity{
 		if (!DamagesToRender.isEmpty()){
 			for (int i = 0; i < DamagesToRender.size(); i++){
 				if(!DamagesToRender.get(i).isFinished){
-					System.out.println("Called");
-					dmgFont.draw(batch, Integer.toString(DamagesToRender.get(i).DamageValue), DamagesToRender.get(i).loc.x, DamagesToRender.get(i).loc.y);
+
+					
+					dmgFont.draw(batch,
+							Integer.toString(DamagesToRender.get(i).DamageValue),
+							DamagesToRender.get(i).loc.x,
+							DamagesToRender.get(i).loc.y);
 					batch.flush();
 					DamagesToRender.get(i).update();
 				}else {
