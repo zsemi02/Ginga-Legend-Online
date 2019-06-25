@@ -10,6 +10,9 @@ public class Attack {
 	
 	public enum AttackType{
 		SPELL_ATTACK,
+		SPELL_RETSU,
+		SPELL_SHUU,
+		SPELL_GEKI,
 		SPELL_ZETSU
 	}
 	
@@ -45,6 +48,33 @@ public class Attack {
 			if((Attacker.getPosition().x - Victim.getPosition().x) < AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE && (Attacker.getPosition().x - Victim .getPosition().x) > -AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) < AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) > -AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA_RANGE){
 
 				game.packets.add(new AttackPacket(out, Attacker, Victim, AttackTypes.SPELL_ZETSU_TENROU_BATTOUGA));
+				//Animate
+			}else{
+				System.out.println("You need to be closer to use this attack on the target!");
+			}
+			break;
+		case SPELL_RETSU:
+			if((Attacker.getPosition().x - Victim.getPosition().x) < AttackTypes.SPELL_RETSU_RANGE && (Attacker.getPosition().x - Victim .getPosition().x) > -AttackTypes.SPELL_RETSU_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) < AttackTypes.SPELL_RETSU_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) > -AttackTypes.SPELL_RETSU_RANGE){
+				
+				game.packets.add(new AttackPacket(out, Attacker, Victim, AttackTypes.SPELL_RETSU));
+				//Animate
+			}else{
+				System.out.println("You need to be closer to use this attack on the target!");
+			}
+			break;
+		case SPELL_SHUU:
+			if((Attacker.getPosition().x - Victim.getPosition().x) < AttackTypes.SPELL_SHUU_RANGE && (Attacker.getPosition().x - Victim .getPosition().x) > -AttackTypes.SPELL_SHUU_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) < AttackTypes.SPELL_SHUU_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) > -AttackTypes.SPELL_SHUU_RANGE){
+				
+				game.packets.add(new AttackPacket(out, Attacker, Victim, AttackTypes.SPELL_SHUU));
+				//Animate
+			}else{
+				System.out.println("You need to be closer to use this attack on the target!");
+			}
+			break;
+		case SPELL_GEKI:
+			if((Attacker.getPosition().x - Victim.getPosition().x) < AttackTypes.SPELL_GEKI_RANGE && (Attacker.getPosition().x - Victim .getPosition().x) > -AttackTypes.SPELL_GEKI_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) < AttackTypes.SPELL_GEKI_RANGE && (Attacker.getPosition().y - Victim.getPosition().y) > -AttackTypes.SPELL_GEKI_RANGE){
+				
+				game.packets.add(new AttackPacket(out, Attacker, Victim, AttackTypes.SPELL_GEKI));
 				//Animate
 			}else{
 				System.out.println("You need to be closer to use this attack on the target!");

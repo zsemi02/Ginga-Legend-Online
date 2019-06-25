@@ -23,16 +23,16 @@ public class AttackInterface {
 			return;
 		performer.mana -= MANA_COST;
 		server.sendPlayerMana(performer);
-		
-		int baseAttackPower = performer.level*10;
+		Random r = new Random();
+		int baseAttackPower = r.nextInt(performer.level*10);
 		for(int i=0;i<3;i++){
 			if(performer.Items[i][0] != null){
 				baseAttackPower+=performer.Items[i][0].damage;
 			}
 		}
-		Random r = new Random();
+		
 		//int finalDamage =baseAttackPower+ r.nextInt(performer.level + performer.level+1)-performer.level;
-		int finalDamage =baseAttackPower+ r.nextInt(AVERAGE_DAMAGE);
+		int finalDamage =baseAttackPower + r.nextInt(AVERAGE_DAMAGE);
 		
 		
 		if(EntityType == EntityPacket.MOB){

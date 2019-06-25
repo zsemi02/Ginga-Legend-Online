@@ -108,6 +108,9 @@ public class PlayerHud{
 		Image spell_attack_sprite = new Image(spell_attack);
 		Texture spell_zetsu = new Texture("ui/spell_attack.png");
 		Image spell_zetsu_sprite = new Image(spell_attack);
+		Image spell_retsu_sprite = new Image(spell_attack);
+		Image spell_shuu_sprite = new Image(spell_attack);
+		Image spell_geki_sprite = new Image(spell_attack);
 		
 		
 		MenuSkin = new Skin(Gdx.files.internal("jsons/MenuSkin.json"), menu);
@@ -192,6 +195,12 @@ public class PlayerHud{
 				SpellHud.add(spell_attack_sprite).size(expProgress.getHeight(), expProgress.getHeight());
 				if(screen.level >= 50)
 					SpellHud.add(spell_zetsu_sprite).size(expProgress.getHeight(),expProgress.getHeight());
+				if(screen.level >= 5)
+					SpellHud.add(spell_retsu_sprite).size(expProgress.getHeight(),expProgress.getHeight());
+				if(screen.level >= 10)
+					SpellHud.add(spell_shuu_sprite).size(expProgress.getHeight(),expProgress.getHeight());
+				if(screen.level >= 20)
+					SpellHud.add(spell_geki_sprite).size(expProgress.getHeight(),expProgress.getHeight());
 				/*
 				 * Check the level, and add the other spells too!
 				 * */

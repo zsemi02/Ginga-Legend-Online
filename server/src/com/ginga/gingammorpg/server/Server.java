@@ -17,6 +17,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.ginga.gingammorpg.server.attacks.Attack;
+import com.ginga.gingammorpg.server.attacks.Geki;
+import com.ginga.gingammorpg.server.attacks.Retsu;
+import com.ginga.gingammorpg.server.attacks.Shuu;
 import com.ginga.gingammorpg.server.attacks.Zetsu;
 import com.ginga.gingammorpg.server.packets.ChatMessagePacket;
 import com.ginga.gingammorpg.server.packets.EntityPacket;
@@ -104,6 +107,9 @@ public class Server {
 			/// Add attacks to list
 			Attacks.add(new Attack(this));
 			Attacks.add(new Zetsu(this));
+			Attacks.add(new Retsu(this));
+			Attacks.add(new Shuu(this));
+			Attacks.add(new Geki(this));
 			
 			System.out.println("Server is up on port "+PORT+" With RAM: ");
 			System.out.println(RamUsage());

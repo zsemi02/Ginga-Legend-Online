@@ -215,22 +215,8 @@ public class GameScreen implements Screen{
 					hud.Open(PlayerHud.OpenType.INVENTORY);
 					//Gdx.input.setInputProcessor(hud.stage);
 					break;
-					/** ADD ATTACKS **/
-				case Keys.NUM_1:
-					SpellCasted = true;
-					if(Selected != null){
-						attack.PerformAttack(p, Selected, AttackType.SPELL_ATTACK);
-						
-					}
+	
 					
-					break;
-				case Keys.NUM_2:
-						SpellCasted = true;
-						if(Selected != null){
-							attack.PerformAttack(p, Selected, AttackType.SPELL_ZETSU);
-							
-						}
-					break;
 				}
 					
 				return true;
@@ -264,12 +250,37 @@ public class GameScreen implements Screen{
 					isTravel=false;
 					break;
 					/** SPELLS ADD HERE TOO **/
-				case Keys.NUM_1:
-					SpellCasted=false;
-					break;
-				case Keys.NUM_2:
-					SpellCasted = false;
-					break;
+					/** ADD ATTACKS **/
+					case Keys.NUM_1:
+						if(Selected != null){
+							attack.PerformAttack(p, Selected, AttackType.SPELL_ATTACK);
+						}
+						
+						break;
+					case Keys.NUM_2:
+						if(Selected != null){
+							attack.PerformAttack(p, Selected, AttackType.SPELL_RETSU);
+							
+						}
+						
+						break;
+					case Keys.NUM_3:						
+						if(Selected != null){
+							attack.PerformAttack(p, Selected, AttackType.SPELL_SHUU);
+						}
+						
+						break;
+					case Keys.NUM_4:
+						if(Selected != null){
+							attack.PerformAttack(p, Selected, AttackType.SPELL_GEKI);	
+						}
+						
+						break;
+					case Keys.NUM_5:
+							if(Selected != null){
+								attack.PerformAttack(p, Selected, AttackType.SPELL_ZETSU);
+							}
+							break;
 				}
 				return true;
 			}

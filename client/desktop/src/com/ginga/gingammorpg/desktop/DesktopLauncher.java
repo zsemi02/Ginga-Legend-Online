@@ -9,11 +9,11 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Ginga MMORPG";
-		/*config.width = 1024;
+		config.width = 1024;
 		config.height = 768;
-		config.fullscreen = true;*/
-		config.width = 512;
-		config.height = 384;
+		config.fullscreen = false;
+		/*config.width = 512;
+		config.height = 384;*/
 		config.resizable = false;
 		config.useGL30 = true;
 		ShaderProgram.prependVertexCode = "#version 140\n#define varying out\n#define attribute in\n";

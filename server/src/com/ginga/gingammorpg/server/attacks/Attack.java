@@ -9,7 +9,8 @@ public class Attack extends AttackInterface{
 		super(server);
 		ID = 1;
 		ATTACK_RANGE = 100;
-		MANA_COST = 10;
+		MANA_COST = 5;
+		AVERAGE_DAMAGE = 5;
 	}
 
 }
