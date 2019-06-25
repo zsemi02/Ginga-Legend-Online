@@ -7,8 +7,8 @@ import com.ginga.gingammorpg.screens.Splash;
 
 
 public class GingaMMORPG extends Game {
-	
-	public static final String TITLE="Ginga Legend Online", VERSION="0.5.0", LOGIN_SERVER="http://192.168.1.101/Ginga/auth.php", GAME_SERVER="192.168.1.101", SALT_SERVER="http://192.168.1.101/Ginga/salt.php";
+	static String IP = "127.0.0.1";
+	public static final String TITLE="Ginga Legend Online", VERSION="0.5.0", LOGIN_SERVER="http://"+IP+"/Ginga/auth.php", GAME_SERVER=IP, SALT_SERVER="http://"+IP+"/Ginga/salt.php";
 	public static final int GAME_PORT = 7755;
 	
 	@Override

@@ -59,10 +59,13 @@ public class MainPacketListener implements Runnable{
 							RemotePlayer rem = game.RemotePlayers.get(i);
 							//System.out.println(rem.ID);
 							if(rem.ID == id){
-								rem.position.x = xRemote;
-								rem.position.y = yRemote;
+								rem.RealPos.x = xRemote;
+								rem.RealPos.y = yRemote;
 								rem.rotation = Remoterotation;
 								rem.Health = RemoteHP;
+								if(rem.Health > RemoteHP){
+									game.DamagedEntityEvent(rem,rem.Health-RemoteHP);
+								}
 								rem.maxHealth = RemoteMaxHp;
 								rem.level = remoteLevel;
 								IsLoaded = true;
@@ -71,7 +74,7 @@ public class MainPacketListener implements Runnable{
 						}//
 						if(!IsLoaded){
 									if(!game.world.isLocked()){
-									RemotePlayer remote = new RemotePlayer(30, 30, name, id, xRemote, yRemote, remoteStartingRegion, RemoteHP, RemoteMaxHp, remStyleid, game.world, game.skin, remoteLevel);
+									RemotePlayer remote = new RemotePlayer(30, 30, name, id, xRemote, yRemote, remoteStartingRegion, RemoteHP, RemoteMaxHp, remStyleid, game.world, game.skin, remoteLevel, game);
 									game.RemotePlayers.add(remote);
 									}
 									
@@ -95,6 +98,9 @@ public class MainPacketListener implements Runnable{
 							Mob current = game.Mobs.get(k);
 							if(current.ID == MobId){
 								current.position.set(Mobx, Moby);
+								if(current.Health > MobHealth){
+									game.DamagedEntityEvent(current,current.Health-MobHealth);
+								}
 								current.Health = MobHealth;
 								current.rotation = MobRotation;
 								isLoaded = true;

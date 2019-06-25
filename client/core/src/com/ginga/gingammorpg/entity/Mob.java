@@ -35,7 +35,7 @@ public class Mob extends Creature{
 	GameScreen game;
 	
 	public Mob(float width, float height,int id, String name, float x, float y, int Health, int max_health, int style_id, int damage, int level, int xpDrop, float rotation, Skin skin, World world, GameScreen game) {
-		super(width, height, name, id, skin);
+		super(width, height, name, id, skin, game);
 		position.set(x, y);
 		this.max_health = max_health;
 		this.styleID = style_id;

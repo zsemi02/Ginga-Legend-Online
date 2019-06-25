@@ -25,6 +25,7 @@ import com.ginga.gingammorpg.server.packets.HealthPacket;
 import com.ginga.gingammorpg.server.packets.LevelPacket;
 import com.ginga.gingammorpg.server.packets.ManaPacket;
 import com.ginga.gingammorpg.server.packets.MaxHealthPacket;
+import com.ginga.gingammorpg.server.packets.MaxManaPacket;
 import com.ginga.gingammorpg.server.packets.NeedxpPacket;
 import com.ginga.gingammorpg.server.packets.Packet;
 import com.ginga.gingammorpg.server.packets.RemoveEntityPacket;
@@ -218,7 +219,7 @@ public class Server {
 							}
 					
 				}
-			},0,1000/60,TimeUnit.MILLISECONDS);
+			},0,1000/20,TimeUnit.MILLISECONDS);
 			
 			
 			
@@ -432,11 +433,15 @@ public class Server {
 			int remainExp = u.xp-u.needxp;
 			u.level++;
 			u.needxp = u.level*u.level*100;
+			u.MaxHealth += 20;
+			u.max_mana += 10;
 			u.xp = remainExp;
 			saveUser(state, u);
 			packets.add(new LevelPacket(u));
 			packets.add(new NeedxpPacket(u));
 			packets.add(new ExpPacket(u));
+			packets.add(new MaxHealthPacket(u));
+			packets.add(new MaxManaPacket(u));
 			
 			levelUpPlayer(u);
 		}

@@ -25,6 +25,7 @@ public class RemoveEntityPacket extends Packet{
 			out.writeByte(type);
 			out.writeInt(id);
 			out.flush();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

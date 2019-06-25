@@ -34,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.ginga.gingammorpg.Attack;
 import com.ginga.gingammorpg.Attack.AttackType;
 import com.ginga.gingammorpg.InputController;
+import com.ginga.gingammorpg.entity.Assets;
 import com.ginga.gingammorpg.entity.Creature;
 import com.ginga.gingammorpg.entity.Mob;
 import com.ginga.gingammorpg.entity.Player;
@@ -49,7 +50,7 @@ public class GameScreen implements Screen{
 	
 	public World world;
 	Box2DDebugRenderer debugrenderer;
-	OrthographicCamera camera, MapCamera;
+	public OrthographicCamera camera, MapCamera;
 	public Player p;
 	SpriteBatch batch;
 	DataOutputStream out;
@@ -85,6 +86,7 @@ public class GameScreen implements Screen{
 	int[][] Slots;
 	InputMultiplexer inputMultiplexer;
 	public ArrayList<Packet> packets = new ArrayList<Packet>();
+	public Assets assets;
 	
 	
 	public GameScreen(Socket socket, float x, float y, byte RegionByte, String username, int health, int maxHealth, int level, int xp,int needexp, int money, int mana, int maxmana, int[][] Slots) {
@@ -336,7 +338,7 @@ public class GameScreen implements Screen{
 		ScheduledExecutorService exec = (ScheduledExecutorService) Executors.newSingleThreadScheduledExecutor();
 		exec.scheduleAtFixedRate(new MainPacketListener(in, this), 0, 10, TimeUnit.MICROSECONDS);
 		
-		
+		assets = new Assets();
 		
 	}
 
@@ -473,9 +475,11 @@ public class GameScreen implements Screen{
 		batch.begin();
 		//Gdx.gl.glDepthMask(true);
 		p.render(batch);
+		p.render(batch, p.position);
 		for(int i=0;i<RemotePlayers.size();i++){
 			RemotePlayer rem = RemotePlayers.get(i);
 			rem.render(batch);
+			rem.render(batch, rem.position);
 			rem.update();
 			
 		}
@@ -483,6 +487,7 @@ public class GameScreen implements Screen{
 			Mob remMob = Mobs.get(i);
 			
 			remMob.render(batch);
+			remMob.render(batch, remMob.position);
 			remMob.update();
 			
 		}
@@ -588,10 +593,11 @@ public class GameScreen implements Screen{
 		}
 		Mobs.clear();
 		RemotePlayers.clear();
-		
-		
-		
-		
+
+	}
+	
+	public void DamagedEntityEvent(Creature Victim, int dmg){
+		Victim.AddDamageToRender(dmg, Victim.position);
 	}
 
 }

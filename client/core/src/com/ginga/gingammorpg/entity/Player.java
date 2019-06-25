@@ -47,7 +47,7 @@ public class Player extends Creature{
 	
 	
 	public Player(float x, float y, int health, int maxhealth, float width, float height, World world, String name, int ID, DataOutputStream out, float mapWidth, float mapHeight, Skin skin, int level, int mana, int maxmana, int xp, int neededXp, GameScreen game){
-		super(width, height, name, ID, skin);
+		super(width, height, name, ID, skin, game);
 		getPosition().x = x;
 		getPosition().y = y;
 		lastPos.set(getPosition());
@@ -88,10 +88,12 @@ public class Player extends Creature{
 	
 		//Texture sheet = new Texture("img/character/style1sheet.png");	//késöbb megcsinálni normálisan Style ID alapján.
 		Texture sheet = new Texture("img/character/style1sheet.png");	//késöbb megcsinálni normálisan Style ID alapján.
-		TextureRegion[] animRegion = new TextureRegion[2];
+		
+		TextureRegion[] animRegion = new TextureRegion[sheet.getWidth()/64];
 		TextureRegion[][] split = TextureRegion.split(sheet, 64, 64);	
-		animRegion[0] = split[0][0];
-		animRegion[1] = split[0][1];									
+		for(int i=0; i < sheet.getWidth()/64; i++){
+			animRegion[i] = split[0][i];
+		}									
 		anim = new Animation<TextureRegion>(0.1f, animRegion);
 		anim.setPlayMode(PlayMode.LOOP);
 		
@@ -116,30 +118,7 @@ public class Player extends Creature{
 			anim.setFrameDuration(1f);
 		}else{
 			anim.setFrameDuration(0.1f);
-			if(playerbody.getLinearVelocity().x > 0 && playerbody.getLinearVelocity().y ==0){
-				rotation = 0f;
-			}
-			if(playerbody.getLinearVelocity().x < 0 && playerbody.getLinearVelocity().y ==0){
-				rotation = 180f;
-			}
-			if(playerbody.getLinearVelocity().y > 0 && playerbody.getLinearVelocity().x == 0){
-				rotation = 90f;
-			}
-			if(playerbody.getLinearVelocity().y < 0 && playerbody.getLinearVelocity().x == 0){
-				rotation = -90f;
-			}
-			if(playerbody.getLinearVelocity().x > 0 && playerbody.getLinearVelocity().y >0){
-				rotation = 45f;
-			}
-			if(playerbody.getLinearVelocity().x < 0 && playerbody.getLinearVelocity().y <0){
-				rotation = 225;
-			}
-			if(playerbody.getLinearVelocity().x > 0 && playerbody.getLinearVelocity().y <0){
-				rotation = -45f;
-			}
-			if(playerbody.getLinearVelocity().x < 0 && playerbody.getLinearVelocity().y >0){
-				rotation = 135f;
-			}
+			CalculateRotation();
 		}
 		
 		batch.draw(anim.getKeyFrame(elapsed,true), getPosition().x-width, getPosition().y-height, width, height,width*2, height*2,1f,1f,rotation,true);
@@ -207,5 +186,31 @@ public class Player extends Creature{
 		return speed;
 	}
 	
+	void CalculateRotation(){
+		if(playerbody.getLinearVelocity().x > 0 && playerbody.getLinearVelocity().y ==0){
+			rotation = 0f;
+		}
+		if(playerbody.getLinearVelocity().x < 0 && playerbody.getLinearVelocity().y ==0){
+			rotation = 180f;
+		}
+		if(playerbody.getLinearVelocity().y > 0 && playerbody.getLinearVelocity().x == 0){
+			rotation = 90f;
+		}
+		if(playerbody.getLinearVelocity().y < 0 && playerbody.getLinearVelocity().x == 0){
+			rotation = -90f;
+		}
+		if(playerbody.getLinearVelocity().x > 0 && playerbody.getLinearVelocity().y >0){
+			rotation = 45f;
+		}
+		if(playerbody.getLinearVelocity().x < 0 && playerbody.getLinearVelocity().y <0){
+			rotation = 225;
+		}
+		if(playerbody.getLinearVelocity().x > 0 && playerbody.getLinearVelocity().y <0){
+			rotation = -45f;
+		}
+		if(playerbody.getLinearVelocity().x < 0 && playerbody.getLinearVelocity().y >0){
+			rotation = 135f;
+		}
+	}
 	
 }
