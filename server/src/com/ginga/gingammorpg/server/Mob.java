@@ -23,6 +23,7 @@ public class Mob {
 	public int TicksToAct = 40;
 	public int currentTicks = 0;
 	Server server;
+	public DropMgr dropMgr;
 
 	public Mob(int id, String name, String region, float x, float y, int health, int max_health, int style_id, int damage, int level, int xpDrop, float rotation, Server server) {
 		this.id = id;
@@ -39,16 +40,14 @@ public class Mob {
 		this.rotation = rotation;
 		this.RegionByte = MapParser.parse(region);
 		this.server=server;
+		dropMgr = new DropMgr(id, server);
 	}
 	
 	public void Attack(UserHandler target){
 		target.Health-=damage;	//Later maybe randomize the damage
 		server.sendPlayerHealth(target);
 		if(target.Health <= 0){
-			server.removePlayer(target.id);
-			server.setPlayerCoords(target, target.Region, 100, 100, 90);
-			target.Health=target.MaxHealth;
-			server.sendPlayerHealth(target);
+			target.Die();
 			target = null;
 		}
 	}
@@ -81,34 +80,12 @@ public class Mob {
 	}
 		
 	}
-	
-	public boolean SendOut(DataOutputStream out){
-		if(!isDead){
-		try {
-			out.writeByte(OpCodes.ADD_ENTITY);
-			out.writeByte(EntityPacket.MOB);
-			out.writeInt(id);
-			out.writeUTF(name);
-			out.writeFloat(x);
-			out.writeFloat(y);
-			out.writeInt(health);
-			out.writeInt(max_health);
-			out.writeInt(styleID);
-			out.writeInt(damage);
-			out.writeInt(level);
-			out.writeInt(xpdrop);
-			out.writeFloat(rotation);
-			out.flush();
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		}else{
-			return true;
-		}
-		
+	public void Die(){
+		isDead = true;
+		server.removeMob(id);
+		RespawnMob repsawn = new RespawnMob(id, 2);
+		server.RespawnMobs.add(repsawn);
+		dropMgr.CalculateDrops();
 	}
-	
-	
+
 }

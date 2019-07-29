@@ -14,17 +14,7 @@ public class Data {
 	}
 	
 	
-	public static Data parser(int length, int[] b){
-		if(b[0] == OpCodes.LOGIN){
-			String in ="";
-			for(int k=1;k<length;k++ ){
-				System.out.println(b[k]);
-				in+=Character.toString((char) b[k]);
-			}
-			return new LoginPacket(in);
-		}
-		return null;
-	}
+	
 	
 	
 	public static MovePacket MoveParser(float x, float y){

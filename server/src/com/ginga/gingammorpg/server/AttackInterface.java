@@ -62,13 +62,16 @@ public class AttackInterface {
 	
 			if(victim.health <= 0){
 				//DEAD
-				victim.isDead = true;
-				server.removeMob(victim.id);
-				RespawnMob repsawn = new RespawnMob(victim.id, 2);
-				server.RespawnMobs.add(repsawn);
+				
+				victim.Die();
 				performer.xp+=victim.xpdrop;
 				server.sendPlayerExp(performer);
 				server.levelUpPlayer(performer);
+				victim.dropMgr.permissionToLoot.add(performer);
+				victim.dropMgr.Send();
+				
+				
+				
 			}
 			AfterDamage(performer, victim);
 			
@@ -97,11 +100,7 @@ public class AttackInterface {
 		System.out.println(performer.username+" Attacked "+victim.username+" Dealt "+finalDamage);
 		if(victim.Health <= 0){
 			//DEAD
-			server.removePlayer(victim.id);
-			//SET TO START POSITION
-			server.setPlayerCoords(victim, victim.Startregion, 100, 100, 90); //Set this to start coordinates
-			victim.Health = victim.MaxHealth;
-			server.sendPlayerHealth(victim);
+			victim.Die();
 		}
 		AfterDamage(performer, victim);
 	}// Player end

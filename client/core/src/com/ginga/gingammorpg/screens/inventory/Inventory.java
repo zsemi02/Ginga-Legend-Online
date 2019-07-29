@@ -17,15 +17,15 @@ public class Inventory {
 	Stage stage;
 	Table InventoryTable;
 	public InventorySlot[] slots = new InventorySlot[8];
-	int [][] Slots;
+
 	public Actor Selected = null;
 	
 	
 	
-	public Inventory(Window inventoryWindow, Stage stage, int[][] Slots) {
+	public Inventory(Window inventoryWindow, Stage stage, InventorySlot[] Slots) {
 		this.inventoryWindow=inventoryWindow;
 		this.stage = stage;
-		this.Slots = Slots;
+		this.slots = Slots;
 		
 		inventoryWindow.setWidth(32*6);
 		inventoryWindow.setHeight(32*3);
@@ -40,10 +40,9 @@ public class Inventory {
 		
 		
 		InventoryTable.setDebug(true);
-		for(int i=0;i<8;i++){
+		/*for(int i=0;i<8;i++){
 			slots[i] = new InventorySlot(i, Slots[i][0], Slots[i][1]);
-		}
-
+		}*/
 		for(int i=0;i<3;i++){
 			InventoryTable.add(slots[i]).width(slots[i].width).height(slots[i].height);
 		}

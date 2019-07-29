@@ -59,9 +59,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.ginga.gingammorpg.GingaMMORPG;
+import com.ginga.gingammorpg.entity.Item;
 import com.ginga.gingammorpg.net.LoginPacket;
 import com.ginga.gingammorpg.net.PacketTypes;
 import com.ginga.gingammorpg.net.ResponseListener;
+import com.ginga.gingammorpg.screens.inventory.InventorySlot;
 
 public class MainMenu implements Screen{
 	private Stage stage;
@@ -82,7 +84,7 @@ public class MainMenu implements Screen{
 	float x,y;
 	byte RegionByte;
 	int health, maxhealt, level, xp, needexp, money, mana, maxmana;
-	int[][] Slots = new int[8][2];
+	InventorySlot[] Slots = new InventorySlot[8];
 	public String salt = "";
 	String LoginID = "";
 
@@ -257,9 +259,18 @@ public class MainMenu implements Screen{
 									money = in.readInt();
 									mana = in.readInt();
 									maxmana = in.readInt();
-									for(int i=0;i<Slots.length;i++){
-										Slots[i][0] = in.readInt();
-										Slots[i][1] = in.readInt();
+									for(int i=0;i<8;i++){
+										int itemid = in.readInt();
+										int itemdamage = in.readInt();
+										int itemdefense = in.readInt();
+										int itemhealth = in.readInt();
+										int quantity = in.readInt();
+										String itemname = in.readUTF();
+										String filename = in.readUTF();
+										Item currentitem = new Item(itemid, itemname, itemdamage, itemhealth, itemdefense, filename);
+										InventorySlot currslot = new InventorySlot(i, currentitem.ID == 0 ? null : currentitem, quantity);
+										Slots[i] = currslot;
+										System.out.println(currslot.place+" "+currentitem.ID+" "+currentitem.name);
 									}
 									break;
 								}
@@ -270,7 +281,7 @@ public class MainMenu implements Screen{
 									/*reader.close();
 									in.close();*/
 									
-								
+								System.out.println("Calling new screen...");
 								Gdx.app.postRunnable(new Runnable() {
 									
 									@Override

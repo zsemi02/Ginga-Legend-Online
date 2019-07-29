@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import com.ginga.gingammorpg.entity.EntityPacket;
+import com.ginga.gingammorpg.entity.Item;
 import com.ginga.gingammorpg.entity.Mob;
 import com.ginga.gingammorpg.entity.RemotePlayer;
 import com.ginga.gingammorpg.screens.GameScreen;
@@ -222,6 +223,22 @@ public class MainPacketListener implements Runnable{
 				String from = in.readUTF();
 				String msg = in.readUTF();
 				game.hud.sendMsg("<"+from+">: "+msg);
+				
+			}else if(OP == PacketTypes.LOOT_ITEMS){
+				int size = in.readInt();
+				for(int i=0;i<size;i++){
+					int id = in.readInt();
+					int damage = in.readInt();
+					int defense = in.readInt();
+					int health = in.readInt();
+					String name = in.readUTF();
+					String file = in.readUTF();
+					Item lootItem = new Item(id, name, damage, health, defense, file);
+					game.lootMgr.lootItems.add(lootItem);
+				}
+				for(Item i : game.lootMgr.lootItems){
+					System.out.println(i.name);
+				}
 			}
 			
 				

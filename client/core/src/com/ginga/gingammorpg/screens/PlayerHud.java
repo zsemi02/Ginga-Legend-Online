@@ -74,7 +74,7 @@ public class PlayerHud{
 	TextField ChatTextField;
 	Window InventoryWindow;
 	Inventory inventory;
-	int[][] Slots;
+	InventorySlot[] Slots;
 	DragAndDrop dragndrop = new DragAndDrop();
 	
 	public static enum OpenType{
@@ -84,7 +84,7 @@ public class PlayerHud{
 	OpenType ReasonForOpen = OpenType.CHAT;
 	
 	
-	public PlayerHud(final GameScreen screen,int level, int exp,int needexp, int money, int mana,int maxmana, int hp, int maxHP,int[][] Slots){
+	public PlayerHud(final GameScreen screen,int level, int exp,int needexp, int money, int mana,int maxmana, int hp, int maxHP,InventorySlot[] Slots){
 		this.level = level;
 		this.exp = exp;
 		this.money = money;

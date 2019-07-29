@@ -23,8 +23,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -55,7 +57,7 @@ public class UserHandler extends Thread{
 	String Startregion;
 	public int Health, MaxHealth;
 	public int CharacterStyleID;
-	public int[][] ItemSlots = new int[8][2];
+	public ArrayList<ItemSlot> ItemSlots = new ArrayList<ItemSlot>();
 	public int level;
 	public int xp;
 	public int needxp;
@@ -68,8 +70,7 @@ public class UserHandler extends Thread{
 	String LoginID;
 	String PrivateKey;
 	java.security.PrivateKey decryptkey;
-	
-	
+	public int MaxItemSlots = 8;
 	
 	//spells
 	boolean Spell_Attack=false;
@@ -191,7 +192,7 @@ public class UserHandler extends Thread{
 									}
 								PrivateKey = priv.getString("privkey");
 								PrivateKey = PrivateKey.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "").replaceAll("\n", "").replaceAll("\\s", "");
-								System.out.println(PrivateKey);
+								
 								byte[] PrivByte = Base64.getDecoder().decode(PrivateKey);
 								PKCS8EncodedKeySpec keyspec = new PKCS8EncodedKeySpec(PrivByte);
 								KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -207,7 +208,7 @@ public class UserHandler extends Thread{
 								byte[] decuser = Main.decrypt(decryptkey, encryptedPass);
 								md5pass = new String(decuser);
 								
-								System.out.println(md5pass);
+								
 								//decoded
 								PreparedStatement resultQuery = conn.prepareStatement("SELECT * FROM `users` WHERE name=? AND password=? ");
 								resultQuery.setString(1, username);
@@ -250,8 +251,21 @@ public class UserHandler extends Thread{
 									ResultSet inventoryResult = state.executeQuery("SELECT * FROM `inventory` WHERE `owner_id`='"+id+"'");
 									inventoryResult.next();
 									
-									for(int k=0;k<ItemSlots.length;k++){
-										ItemSlots[k][0] = inventoryResult.getInt("slot_"+k);
+									for(int k=0;k<MaxItemSlots;k++){
+										
+										int id = inventoryResult.getInt("slot_"+k);
+										System.out.println("Loaded id: "+id);
+										for(int j=0; j<server.Items.size(); j++){
+											Item curr = server.Items.get(j);
+											System.out.println("Server ITem List id: "+curr.id);
+											if(curr.id == id){
+												ItemSlots.add(new ItemSlot(curr,inventoryResult.getInt("slot_"+k+"_quantity")));
+												//System.out.println("Item "+((Item)ItemSlots.keySet().toArray()[k]).id+" has been put in");
+												break;
+											}
+										}
+										
+										/*ItemSlots[k][0] = inventoryResult.getInt("slot_"+k);
 										ItemSlots[k][1] = inventoryResult.getInt("slot_"+k+"_quantity");
 										//System.out.println("Item id "+ItemSlots[k][0]+" added to "+k+" slot with "+ItemSlots[k][1]+" Amount");
 										if(ItemSlots[k][0] == 0) continue;
@@ -260,7 +274,7 @@ public class UserHandler extends Thread{
 												Items[k][0] = server.Items.get(g);
 											}
 											
-										}
+										}*/
 									}
 									
 									for(int k=0;k<server.Players.size();k++){
@@ -274,9 +288,9 @@ public class UserHandler extends Thread{
 										}
 									}
 									
-									System.out.println(x+" "+y+" "+regionByte);
 									
-									output.write(OpCodes.LOGIN);
+									
+									/*output.write(OpCodes.LOGIN);
 									output.writeFloat(x);
 									output.writeFloat(y);
 									output.writeByte(regionByte);
@@ -288,11 +302,12 @@ public class UserHandler extends Thread{
 									output.writeInt(money);
 									output.writeInt(mana);
 									output.writeInt(max_mana);
-									for(int k=0;k<ItemSlots.length;k++){
+									for(int k=0;k<MaxItemSlots;k++){
 										output.writeInt(ItemSlots[k][0]);
 										output.writeInt(ItemSlots[k][1]);
 									}
-									output.flush();
+									output.flush();*/
+									server.packets.add(new LoginPacket(this, x, y, regionByte, Health, MaxHealth, level, xp, needxp, money, mana, max_mana, ItemSlots));
 									System.out.println("Player "+username+" connected to the server");
 									server.ChatMessage("Player "+username+" connected to the server", "<Server>");
 									
@@ -358,5 +373,11 @@ public class UserHandler extends Thread{
 		server.logout(this);
 	}
 	
+	public void Die(){
+		server.removePlayer(this.id);
+		server.setPlayerCoords(this, this.Region, 100, 100, 90);
+		this.Health = this.MaxHealth;
+		server.sendPlayerHealth(this);
+	}
 
 }

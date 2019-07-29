@@ -18,6 +18,7 @@ public class PacketTypes {
 	public static final byte SET_MAXMANA = 14;
 	public static final byte CHAT_MESSAGE = 15;
 	public static final byte CHANGE_ITEM = 16;
+	public static final byte LOOT_ITEMS = 17;
 	
 	
 }

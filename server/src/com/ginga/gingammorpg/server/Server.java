@@ -55,6 +55,7 @@ public class Server {
 	long memoryUsage = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 	ArrayList<AttackInterface> Attacks = new ArrayList<AttackInterface>();
 	public ArrayList<Packet> packets = new ArrayList<Packet>();
+	public Connection conn;
 	
 	public Server() {
 		try {
@@ -63,7 +64,7 @@ public class Server {
 			
 			server = new ServerSocket(PORT);
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/gingammorpg?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "");	//TODO: rewrite 127.0.0.1 to static IP
+			conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/gingammorpg?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "");	//TODO: rewrite 127.0.0.1 to static IP
 			
 			
 			Statement state = conn.createStatement();
@@ -228,7 +229,7 @@ public class Server {
 			},0,1000/20,TimeUnit.MILLISECONDS);
 			
 			
-			
+			// UI
 			Thread ui = new Thread(new Runnable() {
 				
 				@Override

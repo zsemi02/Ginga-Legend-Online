@@ -34,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.ginga.gingammorpg.Attack;
 import com.ginga.gingammorpg.Attack.AttackType;
 import com.ginga.gingammorpg.InputController;
+import com.ginga.gingammorpg.LootMgr;
 import com.ginga.gingammorpg.entity.Assets;
 import com.ginga.gingammorpg.entity.Creature;
 import com.ginga.gingammorpg.entity.Mob;
@@ -44,6 +45,7 @@ import com.ginga.gingammorpg.net.MapIDs;
 import com.ginga.gingammorpg.net.MovePacket;
 import com.ginga.gingammorpg.net.Packet;
 import com.ginga.gingammorpg.net.PacketTypes;
+import com.ginga.gingammorpg.screens.inventory.InventorySlot;
 
 public class GameScreen implements Screen{
 
@@ -83,13 +85,13 @@ public class GameScreen implements Screen{
 	String ChangeTo = null;
 	Vector2 toCoord = null;
 	TmxMapLoader loader;
-	int[][] Slots;
+	InventorySlot[] Slots;
 	InputMultiplexer inputMultiplexer;
 	public ArrayList<Packet> packets = new ArrayList<Packet>();
 	public Assets assets;
+	public LootMgr lootMgr;
 	
-	
-	public GameScreen(Socket socket, float x, float y, byte RegionByte, String username, int health, int maxHealth, int level, int xp,int needexp, int money, int mana, int maxmana, int[][] Slots) {
+	public GameScreen(Socket socket, float x, float y, byte RegionByte, String username, int health, int maxHealth, int level, int xp,int needexp, int money, int mana, int maxmana, InventorySlot[] Slots) {
 		this.socket = socket;
 		this.health = health;
 		this.x = x;
@@ -107,6 +109,10 @@ public class GameScreen implements Screen{
 		RegionName = MapIDs.Parsebyte(RegionByte);
 		inputMultiplexer = new InputMultiplexer();
 		assets = new Assets();
+		
+		
+		
+		
 		}
 	
 	
@@ -150,6 +156,7 @@ public class GameScreen implements Screen{
 		SwitchMapLablel.setPosition(tempv3.x, tempv3.y);
 		SwitchMapLablel.setVisible(false);
 		
+		lootMgr = new LootMgr();
 		//batch.setProjectionMatrix(camera.combined);
 		//p = new Player(0, 1, 1, 1, 10, world);
 		
